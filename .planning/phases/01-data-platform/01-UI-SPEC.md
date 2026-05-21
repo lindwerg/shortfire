@@ -81,8 +81,8 @@ OKLCH chosen over hex for perceptual uniformity — gradients and hover states s
   --color-warn:           oklch(78% 0.16   75);   /* amber — stale within 2× expected lag */
   --color-danger:         oklch(64% 0.20   25);   /* red — beyond 2× expected lag, dead-letter spike, backup > 24h */
 
-  /* Focus ring */
-  --color-focus-ring:     oklch(74% 0.18  210);   /* matches --color-accent */
+  /* Focus ring — references accent so Phase 4 shifts both together */
+  --color-focus-ring:     var(--color-accent);
 }
 ```
 
@@ -118,8 +118,10 @@ Three-size scale, two weights, two families. Numerics always render in the mono 
 |------|--------|------|--------|-------------|----------------|
 | Display | Söhne / system-ui | 32px | 600 (semibold) | 1.15 | -0.02em |
 | Body | Söhne / system-ui | 15px | 400 (regular) | 1.55 | 0 |
-| Label / meta | Söhne / system-ui | 12px | 500 (medium) | 1.4 | 0.04em uppercase |
-| Numeric / mono | JetBrains Mono | 14px | 400 (regular), 500 for emphasis | 1.5 | 0 (tabular-nums) |
+| Label / meta | Söhne / system-ui | 12px | 400 (regular) | 1.4 | 0.04em uppercase |
+| Numeric / mono | JetBrains Mono | 14px | 400 (regular) | 1.5 | 0 (tabular-nums) |
+
+> Mono is 14 px (not 15) because tabular monospaced glyphs render visually larger than proportional bodies at the same px — 14 px mono ≈ 15 px proportional in optical weight. Labels render at weight 400 and rely on uppercase + `--tracking-label: 0.04em` + `--color-text-tertiary` for hierarchy (Swiss/International editorial discipline — saves an Inter/Söhne weight in Phase 4 font loading).
 
 CSS:
 
@@ -149,7 +151,7 @@ CSS:
 
 **Forbidden in Phase 1:**
 - More than 3 sizes (extra sizes added in Phase 4 only if a real surface needs them).
-- Variable fonts / multiple weights beyond 400/500/600 — keeps font-loading budget tight in Phase 4 when web fonts ship.
+- Variable fonts / multiple weights beyond 400/600 — keeps font-loading budget tight in Phase 4 when web fonts ship.
 - Italic — reserved for Phase 5 if needed for citations; not used decoratively.
 - Underlines except on focused/hovered links.
 
@@ -268,7 +270,7 @@ Six primitives ship in the placeholder page. Phase 4 inherits these as the basis
 <p class="label">Phase 1 · Data Platform · live</p>
 ```
 
-- `font-size: var(--text-label)`, `font-weight: 500`, `text-transform: uppercase`, `letter-spacing: var(--tracking-label)`, `color: var(--color-text-tertiary)`.
+- `font-size: var(--text-label)`, `font-weight: 400`, `text-transform: uppercase`, `letter-spacing: var(--tracking-label)`, `color: var(--color-text-tertiary)`.
 
 ### 4. Freshness table (tabular numerics)
 
@@ -457,7 +459,7 @@ Forbidden:
 | 1.4.1 Use of color | Every status uses a dingbat (`● ◐ ○`) + color. Color alone never carries meaning. |
 | Semantic HTML | `<main>`, `<header>`, `<section>`, `<footer>`, `<table>` with proper `<thead>`/`<tbody>`. No `<div>` stacks where a semantic element fits. |
 | Heading hierarchy | One `<h1>` (display). No skipped levels. Labels are `<p class="label">`, not faux headings. |
-| Keyboard navigation | One focusable element on the page (the repository link). `:focus-visible` ring visible at ≥ 3:1 against `--color-bg-base`. |
+| Keyboard navigation | One focusable element on the page (the repository link). `:focus-visible` ring visible at ≥ 3:1 against `--color-bg-base`. Tab order is document order — do not assign explicit `tabindex` values; the single focusable element (repo link) is reached naturally. |
 | Reduced motion | `@media (prefers-reduced-motion: reduce)` zeros transitions globally (single rule shown above). |
 | Language | `<html lang="ru">` on the document (page copy is Russian-first); per-segment `lang="en"` on English-only labels (`PHASE 1 · DATA PLATFORM · LIVE`, `Build:` etc.) for screen-reader pronunciation. |
 | Font size | Minimum 12px (label); body 15px. No 10/11 px micro-copy. |
@@ -564,7 +566,7 @@ Future phases (Phase 4 in particular) inheriting this token system get a fresh d
 - [ ] **D1 — Copywriting:** Russian-first labels, English technical identifiers, terse operator-facing error/empty copy with `Next:` actions where applicable, no decorative friendliness.
 - [ ] **D2 — Visuals:** Hairline-driven editorial-terminal layout; dingbats + color for status; one accent reserved for healthy/live signal; no template patterns (no card grid, no gradient blob, no centered hero with CTA, no pill tags).
 - [ ] **D3 — Color:** OKLCH tokens with documented contrast ratios; 60% (bg surfaces) / 30% (text+borders+structure) / 10% (cyan accent, reserved-for list); semantic hues reserved for healthy/warn/danger.
-- [ ] **D4 — Typography:** 3 sizes × 2 weights × 2 families (display/body shared, mono for numerics); tabular-nums on numeric columns; minimum 12px label, 15px body.
+- [ ] **D4 — Typography:** 3 sizes × 2 weights × 2 families (400 regular for body/label/mono, 600 semibold for display only); tabular-nums on numeric columns; minimum 12px label, 15px body.
 - [ ] **D5 — Spacing:** 8-point scale tokens `xs..3xl`; only `xs..xl` consumed in Phase 1; `2xl` reserved for desktop padding; `3xl` reserved for Phase 4 hero spacing.
 - [ ] **D6 — Registry Safety:** No registry surface in Phase 1; safety gate not applicable; deferred to Phase 4 introduction of interactive dashboard.
 
