@@ -1,13 +1,17 @@
 # syntax=docker/dockerfile:1.7
 #
 # Multi-stage build — single image shared by all 3 Railway services (D-03).
-# Each service overrides the startCommand in the Railway dashboard; the default
-# CMD here targets data-platform so a bare `docker run` is meaningful.
+# Each service overrides the startCommand via its own railway.*.toml file
+# (data-platform → railway.toml, strategy-engine → railway.strategy-engine.toml,
+# dashboard → railway.dashboard.toml). The default CMD here targets data-platform
+# so a bare `docker run` is meaningful.
 #
 # T-00-01 mitigations applied:
 #   - .dockerignore excludes .env*, .planning/, tests/, docs
 #   - Runtime stage runs as UID 1000 (non-root), never as root
 #   - uv sync --no-dev: dev dependencies are never shipped in the image
+#   - Runtime stage carries NO uv, NO build tools — only the resolved venv
+#     and application source.
 #
 FROM python:3.12-slim AS base
 
@@ -24,10 +28,8 @@ ENV PYTHONUNBUFFERED=1 \
 # change, not when application source changes.
 FROM base AS deps
 
-# Install uv (pinned to same major as setup-uv@v8 uses in CI — 0.11.x)
-ADD https://astral.sh/uv/install.sh /uv-install.sh
-RUN sh /uv-install.sh && rm /uv-install.sh
-ENV PATH="/root/.local/bin:$PATH"
+# uv installed via official Astral image (no curl/wget required in slim base).
+COPY --from=ghcr.io/astral-sh/uv:0.5.4 /uv /uvx /usr/local/bin/
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
@@ -45,13 +47,15 @@ RUN groupadd --system app && useradd --system --gid app --uid 1000 app
 
 WORKDIR /app
 
-# Venv from deps stage
+# Venv from deps stage (alembic + uvicorn + fastapi + … all already installed)
 COPY --from=deps /app/.venv /app/.venv
 
 # Application source
 COPY src/shortfire /app/src/shortfire
 
-# Alembic migrations — needed by data-platform's preDeployCommand (OPS-07)
+# Alembic migrations — needed by data-platform's preDeployCommand (OPS-07).
+# alembic.ini's `prepend_sys_path = src` (set in Plan 00-04) makes
+# `alembic upgrade head` find the package without uv-in-runtime.
 COPY alembic /app/alembic
 COPY alembic.ini /app/alembic.ini
 
@@ -60,6 +64,6 @@ USER app
 
 EXPOSE 8000
 
-# Default startCommand — overridden per service in Railway dashboard (D-03).
+# Default startCommand — overridden per service in each railway.*.toml (D-03).
 # Railway injects $PORT at runtime; we fall back to 8000 for local `docker run`.
 CMD ["sh", "-c", "uvicorn shortfire.entrypoints.data_platform:app --host 0.0.0.0 --port ${PORT:-8000}"]
