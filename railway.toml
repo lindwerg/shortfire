@@ -1,0 +1,51 @@
+"$schema" = "https://railway.com/railway.schema.json"
+
+# railway.toml — static config-as-code for the data-platform service (D-03).
+#
+# All 3 Railway app services (data-platform, strategy-engine, dashboard) share
+# one Docker image. Per-service overrides (startCommand, sleepApplication) are
+# set in the Railway dashboard on each service. See comments below for the
+# exact values to use.
+#
+# References: RESEARCH.md §Pattern 4, CONTEXT.md D-03, D-04, D-05, D-34
+#             RESEARCH.md Open Question 1 (preDeployCommand recommendation)
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+# D-05: no watchPatterns in Phase 0 — every commit to main triggers a redeploy
+# of all 3 services. Revisit only if Railway build cost or instability becomes
+# an issue in Phase 1+.
+
+[deploy]
+# ── data-platform defaults ────────────────────────────────────────────────────
+# strategy-engine and dashboard MUST override startCommand in the Railway
+# dashboard (Settings → Deploy → Start Command):
+#
+#   strategy-engine:
+#     startCommand = "uvicorn shortfire.entrypoints.strategy_engine:app --host 0.0.0.0 --port $PORT"
+#     sleepApplication = true   (D-04: sleep-when-idle placeholder)
+#
+#   dashboard:
+#     startCommand = "uvicorn shortfire.entrypoints.dashboard:app --host 0.0.0.0 --port $PORT"
+#     sleepApplication = true   (D-04: sleep-when-idle placeholder)
+#
+# ── Environment variables for ALL 3 app services (Railway dashboard → Variables) ──
+#   DATABASE_URL = ${{Postgres.DATABASE_URL}}    (D-24 reference variable)
+#   ENV          = production
+#   LOG_LEVEL    = INFO
+#
+# ── preDeployCommand (data-platform only) ─────────────────────────────────────
+# RESEARCH.md Open Question 1 recommendation: run migrations in preDeployCommand
+# (not startCommand) so Railway waits for migrations to succeed before routing
+# traffic. Idempotent — safe to run on every deploy (D-31, alembic upgrade head).
+# strategy-engine and dashboard set preDeployCommand to "" (empty) in dashboard.
+preDeployCommand = ["uv", "run", "alembic", "upgrade", "head"]
+
+startCommand = "uvicorn shortfire.entrypoints.data_platform:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
+# sleepApplication NOT set here — data-platform is always-on (D-04).
+# Railway default when the key is absent = false (always-on).

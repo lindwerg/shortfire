@@ -1,0 +1,54 @@
+# Git metadata — never ship version history in the image
+.git
+.github
+
+# Python caches and bytecode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Development virtual environments
+.venv
+venv
+env
+
+# Secrets and local config (T-00-01: never ship .env* into image)
+.env
+.env.local
+.env.*.local
+*.env.bak
+
+# Test infrastructure (not needed at runtime; keeps image slim)
+tests
+.pytest_cache
+.coverage
+htmlcov
+coverage.xml
+
+# Type checker and linter caches
+.mypy_cache
+.ruff_cache
+
+# Planning and Claude artifacts (development metadata, not application code)
+.planning
+.claude
+
+# Documentation (*.md excluded except README.md which is fine to exclude too)
+*.md
+
+# Build artifacts
+dist
+build
+*.egg-info
+
+# Local dev tooling
+docker-compose.yml
+.pre-commit-config.yaml
+.gitleaks.toml
+
+# OS and editor artifacts
+.DS_Store
+.vscode
+.idea
+Thumbs.db
