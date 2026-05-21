@@ -149,20 +149,23 @@ async def test_fake_mexc_place_order_returns_id_and_records() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Test 5: FakeMexcClient.fetch_funding_rate_history raises NotImplementedError
+# Test 5: FakeMexcClient.fetch_funding_rate_history returns empty by default
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
-async def test_fake_mexc_fetch_funding_rate_raises_not_implemented() -> None:
-    """fetch_funding_rate_history raises NotImplementedError — Phase 0 boundary doc."""
+async def test_fake_mexc_fetch_funding_rate_history_returns_empty_by_default() -> None:
+    """fetch_funding_rate_history returns empty tuple by default.
+
+    Phase 1 (01-05) widened the Phase 0 NotImplementedError boundary.
+    """
     fake = FakeMexcClient()
-    with pytest.raises(NotImplementedError):
-        await fake.fetch_funding_rate_history(
-            "BTCUSDT",
-            since=_utc(2024, 1, 1),
-            until=_utc(2024, 1, 2),
-        )
+    result = await fake.fetch_funding_rate_history(
+        "BTCUSDT",
+        since=_utc(2024, 1, 1),
+        until=_utc(2024, 1, 2),
+    )
+    assert result == ()
 
 
 # ---------------------------------------------------------------------------
