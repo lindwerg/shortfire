@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: timescale/timescaledb:2.18.0-pg16
+    environment:
+      POSTGRES_USER: shortfire
+      POSTGRES_PASSWORD: shortfire
+      POSTGRES_DB: shortfire_dev
+      TIMESCALEDB_TELEMETRY: 'off'
+    ports: ["5432:5432"]
+    volumes: ["shortfire-pg:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shortfire"]
+
+volumes:
+  shortfire-pg: {}
