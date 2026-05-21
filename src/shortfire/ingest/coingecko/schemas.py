@@ -18,6 +18,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
+import orjson
 from pydantic import BaseModel, ConfigDict
 from pydantic import TypeAdapter as _TypeAdapter
 
@@ -98,7 +99,8 @@ class CoinsMarketsRow(BaseModel):
             self.market_cap,  # market_cap_usd
             None,  # category — CoinDetailResponse enrichment (not available from /coins/markets)
             None,  # listing_date — CoinDetailResponse enrichment
-            self.raw_payload,  # raw_payload JSONB (T-1-CG-05: retained for EDA)
+            # raw_payload: asyncpg binary COPY requires JSON string, not dict (T-1-CG-05)
+            orjson.dumps(self.raw_payload).decode() if self.raw_payload is not None else None,
             "coingecko",  # source — T-1-CG-04: always literal, never from wire
             "ok",  # quality_flag
         )

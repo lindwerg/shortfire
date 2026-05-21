@@ -2,7 +2,7 @@
 
 Verifies:
   - fetch_and_write_daily inserts rows into raw_coingecko_market
-  - Idempotency: second call returns 0 (ON CONFLICT DO NOTHING)
+  - Idempotency: second call inserts no duplicates (ON CONFLICT DO NOTHING)
   - source='coingecko' in every inserted row (T-1-CG-04)
   - ts and symbol are set correctly
 
@@ -13,15 +13,13 @@ Uses:
 
 from __future__ import annotations
 
-import asyncio
-from collections.abc import Generator
 from datetime import UTC, datetime
 
 import asyncpg
 import pytest
-from shortfire.ingest.coingecko.universe import fetch_and_write_daily
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
+from shortfire.ingest.coingecko.universe import fetch_and_write_daily
 from tests.fakes.coingecko import CANNED_MARKETS_ROWS, FakeCoinGeckoClient
 
 pytestmark = pytest.mark.integration
@@ -30,7 +28,7 @@ _FROZEN_TS = datetime(2026, 5, 21, 0, 30, 0, tzinfo=UTC)
 
 
 # ---------------------------------------------------------------------------
-# Fixtures
+# Helpers
 # ---------------------------------------------------------------------------
 
 
@@ -42,18 +40,33 @@ def _to_asyncpg_url(url: str) -> str:
     return url
 
 
-@pytest.fixture(scope="module")
-def async_engine(migrated_db: str) -> Generator[AsyncEngine, None, None]:
-    """Session-scoped AsyncEngine pointing at the testcontainer migrated DB."""
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+async def async_engine(migrated_db: str) -> AsyncEngine:  # type: ignore[override]
+    """Function-scoped AsyncEngine for the testcontainer migrated DB.
+
+    Function-scoped so each test gets a fresh engine bound to its own event loop.
+    Module-scoped engines cause "Event loop is closed" errors because pytest-asyncio
+    creates a new loop per test function by default.
+    """
     async_url = migrated_db.replace("postgresql://", "postgresql+asyncpg://")
     engine = create_async_engine(async_url, echo=False)
-    yield engine
-    asyncio.get_event_loop().run_until_complete(engine.dispose())
+    yield engine  # type: ignore[misc]
+    await engine.dispose()
 
 
 @pytest.fixture(autouse=True)
-def clean_raw_coingecko_market(migrated_db: str) -> Generator[None, None, None]:
-    """Truncate raw_coingecko_market before and after each test for isolation."""
+async def clean_raw_coingecko_market(migrated_db: str) -> None:  # type: ignore[override]
+    """Truncate raw_coingecko_market before and after each test for isolation.
+
+    Uses asyncpg directly (avoids SQLAlchemy overhead). Must be an async fixture
+    so it runs in the same event loop as the test (avoids loop-conflict errors from
+    asyncio.run() inside pytest-asyncio's already-running loop).
+    """
     asyncpg_url = _to_asyncpg_url(migrated_db)
 
     async def _truncate() -> None:
@@ -63,9 +76,9 @@ def clean_raw_coingecko_market(migrated_db: str) -> Generator[None, None, None]:
         finally:
             await conn.close()  # type: ignore[attr-defined]
 
-    asyncio.run(_truncate())
-    yield
-    asyncio.run(_truncate())
+    await _truncate()
+    yield  # type: ignore[misc]
+    await _truncate()
 
 
 # ---------------------------------------------------------------------------
@@ -82,7 +95,6 @@ async def test_fetch_and_write_daily_inserts_rows(async_engine: AsyncEngine, mig
 
     assert count == len(CANNED_MARKETS_ROWS)
 
-    # Verify rows in DB
     asyncpg_url = _to_asyncpg_url(migrated_db)
     conn: asyncpg.Connection[asyncpg.Record] = await asyncpg.connect(asyncpg_url)  # type: ignore[type-arg]
     try:
@@ -99,15 +111,14 @@ async def test_fetch_and_write_daily_inserts_rows(async_engine: AsyncEngine, mig
 
 @pytest.mark.asyncio
 async def test_fetch_and_write_daily_idempotent(async_engine: AsyncEngine, migrated_db: str) -> None:
-    """Second call with same ts returns 0 — ON CONFLICT DO NOTHING (D-62)."""
+    """Second call with same ts produces no duplicate rows — ON CONFLICT DO NOTHING (D-62)."""
     client = FakeCoinGeckoClient(canned_markets=CANNED_MARKETS_ROWS)
 
     first = await fetch_and_write_daily(engine=async_engine, client=client, ts=_FROZEN_TS)
     await fetch_and_write_daily(engine=async_engine, client=client, ts=_FROZEN_TS)
 
     assert first == len(CANNED_MARKETS_ROWS)
-    # Second write: copy_into_hypertable processes records but ON CONFLICT DO NOTHING
-    # means the DB should still have exactly len(CANNED_MARKETS_ROWS) rows (no duplicates)
+
     asyncpg_url = _to_asyncpg_url(migrated_db)
     conn: asyncpg.Connection[asyncpg.Record] = await asyncpg.connect(asyncpg_url)  # type: ignore[type-arg]
     try:
