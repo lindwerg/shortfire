@@ -35,7 +35,7 @@ dockerfilePath = "Dockerfile"
 # traffic. Idempotent — safe to run on every deploy (D-31, alembic upgrade head).
 # strategy-engine and dashboard intentionally do not set preDeployCommand —
 # only one service runs migrations.
-preDeployCommand = ["uv", "run", "alembic", "upgrade", "head"]
+preDeployCommand = ["uv run alembic upgrade head"]
 
 startCommand = "uvicorn shortfire.entrypoints.data_platform:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/health"

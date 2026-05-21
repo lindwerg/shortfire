@@ -129,12 +129,25 @@ def test_predeploy_command() -> None:
 
     Using preDeployCommand (not baking into startCommand) ensures Railway waits
     for the migration to succeed before routing traffic to the new replica.
+
+    Railway's schema treats the array as a list of *commands* (max 1 element today),
+    each element being a full shell line — NOT an argv list. So we must serialize
+    as a single shell-string per element, e.g. ["uv run alembic upgrade head"],
+    not ["uv", "run", "alembic", "upgrade", "head"].
     """
     doc = _load()
     cmd = doc["deploy"]["preDeployCommand"]
-    # Accept either the array form ["uv", "run", "alembic", "upgrade", "head"]
-    # or the string form "uv run alembic upgrade head"
-    cmd_str = " ".join(cmd) if isinstance(cmd, list) else cmd
+    assert isinstance(cmd, list), (
+        f"[deploy].preDeployCommand must be a list of commands, got {type(cmd).__name__}"
+    )
+    assert len(cmd) == 1, (
+        f"[deploy].preDeployCommand must contain exactly one shell-string command "
+        f"(Railway schema: max 1 element); got {len(cmd)} elements: {cmd!r}"
+    )
+    cmd_str = cmd[0]
+    assert isinstance(cmd_str, str), (
+        f"preDeployCommand element must be a string, got {type(cmd_str).__name__}"
+    )
     assert "alembic" in cmd_str, f"[deploy].preDeployCommand must invoke alembic, got {cmd!r}"
     assert "upgrade" in cmd_str, f"[deploy].preDeployCommand must include 'upgrade', got {cmd!r}"
     assert "head" in cmd_str, f"[deploy].preDeployCommand must include 'head', got {cmd!r}"
