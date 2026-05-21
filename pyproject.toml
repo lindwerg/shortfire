@@ -19,6 +19,7 @@ dependencies = [
     "aiolimiter>=1.2",
     "httpx>=0.28",
     "python-dotenv>=1.2",
+    "greenlet>=3.5.1",
 ]
 
 [dependency-groups]
