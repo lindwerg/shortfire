@@ -14,7 +14,7 @@ Six phases take ShortFIRE from empty repo to live capital under hybrid autonomy.
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 0: Foundation** - TDD scaffolding, Railway+TimescaleDB, CI/CD, domain types, observability skeleton (completed 2026-05-21)
-- [ ] **Phase 1: Data Platform** - MEXC/Coinglass/CoinGecko ingest, typed hypertables, universe snapshots, 1-2yr backfill
+- [x] **Phase 1: Data Platform** - MEXC/Coinglass/CoinGecko ingest, typed hypertables, universe snapshots, 1-2yr backfill (completed 2026-05-21)
 - [ ] **Phase 2: Strategy Research + ML Methodology** - Causal feature primitives, pump detection, triple-barrier labeling, PurgedWalkForward, XGBoost/LightGBM baseline with MLflow + SHAP
 - [ ] **Phase 3: Backtester + Strategy Framework** - Strategy Protocol, event-driven backtester with book-walk slippage, ShortAfterPumpStrategy, deterministic reproducibility
 - [ ] **Phase 4: Paper Trading (HARD GATE)** - PaperOrderRouter, full risk module, kill switch, ≥1-month positive-EV paper run with <10% backtest divergence
@@ -99,7 +99,7 @@ Plans:
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
-- [ ] 01-11-PLAN.md — ROADMAP/REQUIREMENTS Coinglass-tier patch (Hobbyist ~$35/mo per D-35) + `.env.example` Phase 1 secret block + STOR-08 6-day CI sanity slice + `docs/BACKFILL.md` + `docs/PHASE-1-SMOKE.md` + Railway 3-service deploy smoke + W5 mandatory ≥1yr backfill execution gate (operator pastes row-count tables into 01-11-SUMMARY.md before checkpoint approval)
+- [x] 01-11-PLAN.md — ROADMAP/REQUIREMENTS Coinglass-tier patch (Hobbyist ~$35/mo per D-35) + `.env.example` Phase 1 secret block + STOR-08 6-day CI sanity slice + `docs/BACKFILL.md` + `docs/PHASE-1-SMOKE.md` + Railway 3-service deploy smoke + W5 mandatory ≥1yr backfill execution gate (operator pastes row-count tables into 01-11-SUMMARY.md before checkpoint approval)
 
 ### Phase 2: Strategy Research + ML Methodology
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 10/11 | In Progress|  |
+| 1. Data Platform | 11/11 | Complete   | 2026-05-21 |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |

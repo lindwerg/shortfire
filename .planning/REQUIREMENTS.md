@@ -42,7 +42,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **STOR-05**: Continuous aggregates exist for 5m / 15m / 1h / 4h rollups of 1m base data
 - [x] **STOR-06**: Daily `universe_snapshots` hypertable captures full set of MEXC perp symbols listed AT each historical date (anti-survivorship)
 - [x] **STOR-07**: Symbol lifecycle handled via soft delete (`delisted_at` column); `ON DELETE CASCADE` is banned
-- [ ] **STOR-08**: Backfill of 1–2 years of historical data completes successfully for OHLCV + funding (Coinglass Hobbyist tier limits accepted for 1m derivatives at ~6 days per D-35 — defer Standard tier ($299/mo) decision to Phase 2 EDA per V2-DATA-01)
+- [x] **STOR-08**: Backfill of 1–2 years of historical data completes successfully for OHLCV + funding (Coinglass Hobbyist tier limits accepted for 1m derivatives at ~6 days per D-35 — defer Standard tier ($299/mo) decision to Phase 2 EDA per V2-DATA-01)
 - [x] **STOR-09**: Backfill gaps are flagged with a `quality_flag` column rather than silently interpolated
 - [x] **STOR-10**: Daily `pg_dump` to external storage (R2/B2) runs and is verifiable
 
@@ -198,8 +198,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **OPS-02**: Railway project connected to GitHub repo; auto-deploys on push to `main`
 - [x] **OPS-03**: GitHub Actions CI runs on every PR: ruff + pyright + pytest (with coverage)
 - [x] **OPS-04**: CI blocks merge on failing tests or coverage drop below 80% (95% on `risk/` and `execution/` modules)
-- [ ] **OPS-05**: Commit → push → deploy to Railway after every completed task (per PROJECT.md DevOps requirement)
-- [ ] **OPS-06**: Three Railway services at v1: `data-platform`, `strategy-engine`, `dashboard`; fourth `risk-guard` added at live launch
+- [x] **OPS-05**: Commit → push → deploy to Railway after every completed task (per PROJECT.md DevOps requirement)
+- [x] **OPS-06**: Three Railway services at v1: `data-platform`, `strategy-engine`, `dashboard`; fourth `risk-guard` added at live launch
 - [x] **OPS-07**: Database migration discipline — Alembic migration files reviewed, applied in deploy step
 - [x] **OPS-08**: Pre-commit hooks: ruff format, ruff lint, secret scan
 
@@ -292,7 +292,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STOR-05 | Phase 1 | Complete |
 | STOR-06 | Phase 1 | Complete |
 | STOR-07 | Phase 1 | Complete |
-| STOR-08 | Phase 1 | Pending |
+| STOR-08 | Phase 1 | Complete |
 | STOR-09 | Phase 1 | Complete |
 | STOR-10 | Phase 1 | Complete |
 | UNIV-01 | Phase 1 | Complete |
@@ -406,8 +406,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-02 | Phase 0 | Complete |
 | OPS-03 | Phase 0 | Complete |
 | OPS-04 | Phase 0 | Complete |
-| OPS-05 | Phase 1 | Pending |
-| OPS-06 | Phase 1 | Pending |
+| OPS-05 | Phase 1 | Complete |
+| OPS-06 | Phase 1 | Complete |
 | OPS-07 | Phase 0 | Complete |
 | OPS-08 | Phase 0 | Complete |
 | TEST-01 | Phase 0 | Complete |
