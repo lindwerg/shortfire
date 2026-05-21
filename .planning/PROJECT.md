@@ -51,6 +51,12 @@ Crypto data platform с first strategy = детекция оптимальных
 - [ ] Dashboard с метриками стратегии (win rate, EV, max drawdown, equity curve)
 - [ ] Мониторинг pipeline health (data freshness, API failures, model staleness)
 
+**DevOps / CI/CD:**
+- [ ] GitHub репозиторий с защищённым main branch
+- [ ] Railway проект подключён к GitHub репо
+- [ ] Pipeline: commit → push → автоматический deploy на Railway после каждой завершённой задачи
+- [ ] GitHub Actions: tests на каждый PR, блокировка merge при падении тестов
+
 ### Out of Scope
 
 <!-- Explicit boundaries with reasoning to prevent re-adding. -->
@@ -94,6 +100,7 @@ Crypto data platform с first strategy = детекция оптимальных
 - **Tech stack — PostgreSQL + TimescaleDB на Railway** — managed time-series storage, без операционного оверхеда от ClickHouse-кластера; миграция в ClickHouse — fallback option если объёмы превысят TimescaleDB efficient sweet spot
 - **Tech stack — XGBoost/LightGBM как baseline** — interpretable, быстрая итерация, понятные feature importance; PyTorch sequence models — только после того как baseline докажет edge
 - **Deployment — Railway** — простота, predictable cost, managed Postgres рядом; GitHub Actions для CI
+- **CI/CD — commit→push→deploy после каждой задачи** — Railway auto-deploy on push to main, GitHub Actions блокирует merge при падении тестов; быстрая обратная связь, тестируем в realistic окружении с первого дня
 - **Testing — TDD с первого коммита** — non-negotiable; каждый модуль начинается с тестов
 - **Validation — walk-forward only** — никаких random split на time-series; data leakage = деньги в утиль
 - **Risk — quarter-Kelly + hard stops + max concurrent positions** — никаких "интуитивно увеличу размер"
