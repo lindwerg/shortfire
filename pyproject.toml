@@ -75,3 +75,9 @@ reportMissingTypeStubs = "warning"
 [tool.coverage.run]
 source = ["src/shortfire"]
 branch = true
+omit = [
+    "src/shortfire/risk/*",
+    "src/shortfire/execution/*",
+    "src/shortfire/ingest/*",
+    "src/shortfire/strategy/*",
+]

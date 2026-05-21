@@ -1,0 +1,70 @@
+# CI pipeline — runs on every push to main and every pull_request (D-33)
+# Steps: checkout → setup-uv → uv sync → pre-commit guards → ruff → pyright
+#        → pytest unit + coverage gate → pytest integration → gitleaks → upload coverage
+name: ci
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # gitleaks needs full history
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          version: "0.11.8"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set Python version
+        run: uv python install 3.12
+
+      - name: Sync dependencies (locked)
+        run: uv sync --locked
+
+      - name: Pre-commit guards (ruff, gitleaks, ban-naive-timestamp, ban-on-delete-cascade, ban-float-in-domain)
+        run: uv run pre-commit run --all-files
+
+      - name: Lint (ruff format check)
+        run: uv run ruff format --check .
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Type-check (pyright)
+        run: uv run pyright
+
+      - name: Test (pytest unit + coverage gate)
+        run: uv run pytest -m "not integration" --cov=src/shortfire --cov-fail-under=80 --cov-report=term --cov-report=xml
+        env:
+          # Ensure entrypoint Settings load fail-fast tests have minimal env
+          ENV: ci
+          DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci_dummy"
+
+      - name: Test (pytest integration — testcontainers)
+        run: uv run pytest -m integration --maxfail=1
+        # testcontainers starts its own Postgres via Docker; ubuntu-latest runner has Docker pre-installed
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage.xml
+          path: coverage.xml
+          retention-days: 14
