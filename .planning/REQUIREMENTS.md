@@ -26,7 +26,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **DATA-04**: MEXC signed trades (recent N or websocket stream with persistence) ingest
 - [x] **DATA-05**: MEXC L2 order book top-20 snapshots sampled every 5–10s per qualifying symbol
 - [x] **DATA-06**: MEXC liquidation events ingest (via websocket or REST polling)
-- [x] **DATA-07**: Coinglass funding-aggregate, OI-aggregate, long/short ratio, liquidation data ingest (within Startup tier $79/mo limits)
+- [x] **DATA-07**: Coinglass funding-aggregate, OI-aggregate, long/short ratio, liquidation data ingest (within Hobbyist tier ~$35/mo limits per D-35: 30 req/min, 1m derivatives ~6 days)
 - [x] **DATA-08**: CoinGecko daily market metadata (price, volume, market cap, category, listing date) ingest
 - [x] **DATA-09**: All ingest pipelines are idempotent on `(symbol, ts, source)` — re-ingest yields no duplicates or schema drift
 - [ ] **DATA-10**: Ingest uses tenacity retries with exponential backoff and aiolimiter rate limits per API provider
@@ -42,7 +42,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **STOR-05**: Continuous aggregates exist for 5m / 15m / 1h / 4h rollups of 1m base data
 - [x] **STOR-06**: Daily `universe_snapshots` hypertable captures full set of MEXC perp symbols listed AT each historical date (anti-survivorship)
 - [x] **STOR-07**: Symbol lifecycle handled via soft delete (`delisted_at` column); `ON DELETE CASCADE` is banned
-- [ ] **STOR-08**: Backfill of 1–2 years of historical data completes successfully for OHLCV + funding (Coinglass Startup tier limits accepted for 1m derivatives — defer Standard tier decision to Phase 2)
+- [ ] **STOR-08**: Backfill of 1–2 years of historical data completes successfully for OHLCV + funding (Coinglass Hobbyist tier limits accepted for 1m derivatives at ~6 days per D-35 — defer Standard tier ($299/mo) decision to Phase 2 EDA per V2-DATA-01)
 - [x] **STOR-09**: Backfill gaps are flagged with a `quality_flag` column rather than silently interpolated
 - [x] **STOR-10**: Daily `pg_dump` to external storage (R2/B2) runs and is verifiable
 
@@ -226,7 +226,7 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Data Expansion (V2-DATA)
 
-- **V2-DATA-01**: Coinglass Standard tier ($299/mo) upgrade — conditional on Phase 2 EDA proving 1m derivatives > 12 days adds edge
+- **V2-DATA-01**: Coinglass Standard tier ($299/mo) upgrade — conditional on Phase 2 EDA proving 1m derivatives > 6 days adds edge (relative gap from Hobbyist ~$35/mo; D-35)
 - **V2-DATA-02**: Backtest-grade L2 reconstruction replay for top-impact trades
 
 ### Infrastructure (V2-INFRA)

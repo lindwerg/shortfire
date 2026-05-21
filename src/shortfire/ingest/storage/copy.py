@@ -62,7 +62,6 @@ async def copy_into_hypertable(
     if not records_list:
         return 0
 
-    staging = f"{target_table}_staging"
     conflict_cols = ", ".join(conflict_columns)
     col_list = ", ".join(columns)
 
@@ -71,8 +70,14 @@ async def copy_into_hypertable(
         raw_conn = raw_connection_obj.driver_connection
         assert raw_conn is not None, "asyncpg driver_connection must not be None"
 
+        # Use the backend PID to give each connection its own staging table,
+        # preventing UniqueViolationError on pg_type when multiple coroutines
+        # issue concurrent CREATE UNLOGGED TABLE IF NOT EXISTS for the same name.
+        pid: int = await raw_conn.fetchval("SELECT pg_backend_pid()")
+        staging = f"{target_table}_staging_{pid}"
+
         async with raw_conn.transaction():
-            # Create UNLOGGED staging table (per-session, fast)
+            # Create UNLOGGED staging table scoped to this backend PID (fast, isolated)
             await raw_conn.execute(
                 f"CREATE UNLOGGED TABLE IF NOT EXISTS {staging}"
                 f" (LIKE {target_table} INCLUDING DEFAULTS);"

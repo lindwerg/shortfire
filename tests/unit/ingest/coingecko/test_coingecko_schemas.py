@@ -16,6 +16,7 @@ from decimal import Decimal
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
+
 from shortfire.ingest.coingecko.schemas import CoinDetailResponse, CoinsMarketsRow
 
 _VALID_RAW = {

@@ -16,8 +16,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from freezegun import freeze_time
-from shortfire.ingest.coingecko.universe import fetch_and_write_daily
 
+from shortfire.ingest.coingecko.universe import fetch_and_write_daily
 from tests.fakes.coingecko import CANNED_MARKETS_ROWS, FakeCoinGeckoClient
 
 _FROZEN_TS = datetime(2026, 5, 21, 0, 30, 0, tzinfo=UTC)
