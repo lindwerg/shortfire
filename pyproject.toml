@@ -20,6 +20,7 @@ dependencies = [
     "httpx[http2]>=0.28",
     "python-dotenv>=1.2",
     "greenlet>=3.5.1",
+    "ccxt>=4.5.54,<4.6",
 ]
 
 [dependency-groups]
