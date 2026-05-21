@@ -77,7 +77,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-04-PLAN.md — Alembic migrations 0009–0014 (Coinglass×4 + CoinGecko + universe_snapshots + symbols relational + dead_letter + ingest_runs + continuous aggregates 5m/15m/1h/4h) + `create_continuous_aggregate` helper + 3 ORM models + STOR-05 CA-parity integration keystone
+- [x] 01-04-PLAN.md — Alembic migrations 0009–0014 (Coinglass×4 + CoinGecko + universe_snapshots + symbols relational + dead_letter + ingest_runs + continuous aggregates 5m/15m/1h/4h) + `create_continuous_aggregate` helper + 3 ORM models + STOR-05 CA-parity integration keystone
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 3/11 | In Progress|  |
+| 1. Data Platform | 4/11 | In Progress|  |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |

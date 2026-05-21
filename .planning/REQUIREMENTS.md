@@ -26,31 +26,31 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DATA-04**: MEXC signed trades (recent N or websocket stream with persistence) ingest
 - [ ] **DATA-05**: MEXC L2 order book top-20 snapshots sampled every 5–10s per qualifying symbol
 - [ ] **DATA-06**: MEXC liquidation events ingest (via websocket or REST polling)
-- [ ] **DATA-07**: Coinglass funding-aggregate, OI-aggregate, long/short ratio, liquidation data ingest (within Startup tier $79/mo limits)
-- [ ] **DATA-08**: CoinGecko daily market metadata (price, volume, market cap, category, listing date) ingest
+- [x] **DATA-07**: Coinglass funding-aggregate, OI-aggregate, long/short ratio, liquidation data ingest (within Startup tier $79/mo limits)
+- [x] **DATA-08**: CoinGecko daily market metadata (price, volume, market cap, category, listing date) ingest
 - [ ] **DATA-09**: All ingest pipelines are idempotent on `(symbol, ts, source)` — re-ingest yields no duplicates or schema drift
 - [ ] **DATA-10**: Ingest uses tenacity retries with exponential backoff and aiolimiter rate limits per API provider
-- [ ] **DATA-11**: Pydantic schema validation runs on every API response; validation failures land in a `dead_letter` table for inspection
-- [ ] **DATA-12**: Each derivatives row carries an explicit `source` column (e.g. `mexc_native`, `coinglass_aggregate`) — MEXC-native and Coinglass-aggregate are NEVER conflated
+- [x] **DATA-11**: Pydantic schema validation runs on every API response; validation failures land in a `dead_letter` table for inspection
+- [x] **DATA-12**: Each derivatives row carries an explicit `source` column (e.g. `mexc_native`, `coinglass_aggregate`) — MEXC-native and Coinglass-aggregate are NEVER conflated
 
 ### Data Platform — Storage (STOR)
 
-- [ ] **STOR-01**: Typed-per-source TimescaleDB hypertables exist (`raw_mexc_candles_1m`, `raw_mexc_funding`, `raw_mexc_oi`, `raw_mexc_l2_top20`, `raw_coinglass_funding_agg`, `raw_coinglass_liq`, `raw_coingecko_market`, etc.)
-- [ ] **STOR-02**: Universal narrow schema (`metric_name, value`) is explicitly REJECTED — typed hypertables only
-- [ ] **STOR-03**: All time columns use `TIMESTAMPTZ` (UTC); never `TIMESTAMP` without timezone
-- [ ] **STOR-04**: Compression policies are applied after 7-day data age via `add_compression_policy`
-- [ ] **STOR-05**: Continuous aggregates exist for 5m / 15m / 1h / 4h rollups of 1m base data
-- [ ] **STOR-06**: Daily `universe_snapshots` hypertable captures full set of MEXC perp symbols listed AT each historical date (anti-survivorship)
-- [ ] **STOR-07**: Symbol lifecycle handled via soft delete (`delisted_at` column); `ON DELETE CASCADE` is banned
+- [x] **STOR-01**: Typed-per-source TimescaleDB hypertables exist (`raw_mexc_candles_1m`, `raw_mexc_funding`, `raw_mexc_oi`, `raw_mexc_l2_top20`, `raw_coinglass_funding_agg`, `raw_coinglass_liq`, `raw_coingecko_market`, etc.)
+- [x] **STOR-02**: Universal narrow schema (`metric_name, value`) is explicitly REJECTED — typed hypertables only
+- [x] **STOR-03**: All time columns use `TIMESTAMPTZ` (UTC); never `TIMESTAMP` without timezone
+- [x] **STOR-04**: Compression policies are applied after 7-day data age via `add_compression_policy`
+- [x] **STOR-05**: Continuous aggregates exist for 5m / 15m / 1h / 4h rollups of 1m base data
+- [x] **STOR-06**: Daily `universe_snapshots` hypertable captures full set of MEXC perp symbols listed AT each historical date (anti-survivorship)
+- [x] **STOR-07**: Symbol lifecycle handled via soft delete (`delisted_at` column); `ON DELETE CASCADE` is banned
 - [ ] **STOR-08**: Backfill of 1–2 years of historical data completes successfully for OHLCV + funding (Coinglass Startup tier limits accepted for 1m derivatives — defer Standard tier decision to Phase 2)
 - [ ] **STOR-09**: Backfill gaps are flagged with a `quality_flag` column rather than silently interpolated
 - [ ] **STOR-10**: Daily `pg_dump` to external storage (R2/B2) runs and is verifiable
 
 ### Universe Filtering (UNIV)
 
-- [ ] **UNIV-01**: Dynamic universe filter: any MEXC perp with 24h USD volume > $500K qualifies for inclusion
+- [x] **UNIV-01**: Dynamic universe filter: any MEXC perp with 24h USD volume > $500K qualifies for inclusion
 - [ ] **UNIV-02**: Universe membership refreshes daily and writes into `universe_snapshots`
-- [ ] **UNIV-03**: Querying universe at historical timestamp T returns "listed AT T" (point-in-time), not "listed today"
+- [x] **UNIV-03**: Querying universe at historical timestamp T returns "listed AT T" (point-in-time), not "listed today"
 - [ ] **UNIV-04**: New listing detection within 24h of MEXC listing announcement
 
 ### Scheduling & Orchestration (ORCH)
@@ -279,25 +279,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-04 | Phase 1 | Pending |
 | DATA-05 | Phase 1 | Pending |
 | DATA-06 | Phase 1 | Pending |
-| DATA-07 | Phase 1 | Pending |
-| DATA-08 | Phase 1 | Pending |
+| DATA-07 | Phase 1 | Complete |
+| DATA-08 | Phase 1 | Complete |
 | DATA-09 | Phase 1 | Pending |
 | DATA-10 | Phase 1 | Pending |
-| DATA-11 | Phase 1 | Pending |
-| DATA-12 | Phase 1 | Pending |
-| STOR-01 | Phase 1 | Pending |
-| STOR-02 | Phase 1 | Pending |
-| STOR-03 | Phase 1 | Pending |
-| STOR-04 | Phase 1 | Pending |
-| STOR-05 | Phase 1 | Pending |
-| STOR-06 | Phase 1 | Pending |
-| STOR-07 | Phase 1 | Pending |
+| DATA-11 | Phase 1 | Complete |
+| DATA-12 | Phase 1 | Complete |
+| STOR-01 | Phase 1 | Complete |
+| STOR-02 | Phase 1 | Complete |
+| STOR-03 | Phase 1 | Complete |
+| STOR-04 | Phase 1 | Complete |
+| STOR-05 | Phase 1 | Complete |
+| STOR-06 | Phase 1 | Complete |
+| STOR-07 | Phase 1 | Complete |
 | STOR-08 | Phase 1 | Pending |
 | STOR-09 | Phase 1 | Pending |
 | STOR-10 | Phase 1 | Pending |
-| UNIV-01 | Phase 1 | Pending |
+| UNIV-01 | Phase 1 | Complete |
 | UNIV-02 | Phase 1 | Pending |
-| UNIV-03 | Phase 1 | Pending |
+| UNIV-03 | Phase 1 | Complete |
 | UNIV-04 | Phase 1 | Pending |
 | ORCH-01 | Phase 1 | Pending |
 | ORCH-02 | Phase 1 | Pending |

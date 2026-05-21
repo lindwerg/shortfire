@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-05-21T17:30:36.514Z"
-last_activity: 2026-05-21 -- Phase 01 execution started
+last_updated: "2026-05-21T18:23:09.472Z"
+last_activity: 2026-05-21
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 19
-  completed_plans: 8
+  completed_plans: 12
   percent: 17
 ---
 
@@ -27,11 +27,11 @@ See: .planning/ROADMAP.md (created 2026-05-21)
 ## Current Position
 
 Phase: 01 (data-platform) — EXECUTING
-Plan: 1 of 11
-Status: Executing Phase 01
-Last activity: 2026-05-21 -- Phase 01 execution started
+Plan: 2 of 11
+Status: Ready to execute
+Last activity: 2026-05-21
 
-Progress: [██████████] 100%
+Progress: [██████░░░░] 63%
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [██████████] 100%
 | Phase 00 P08 | 10 | 2 tasks | 13 files |
 | Phase 00 P07 | 5 | 1 tasks | 5 files |
 | Phase 00 P07 | 52 | 2 tasks | 10 files |
+| Phase 01 P04 | 180 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,10 @@ Decisions are logged in PROJECT.md Key Decisions table. The roadmap codifies the
 - [Phase ?]: per-service railway.*.toml pattern: root railway.toml holds data-platform defaults; per-service files override startCommand and sleepApplication for gitops-verified config
 - [Phase ?]: pyright basic mode scoped to tests/: strict mode flagged test helper types; scoping to basic avoids CI noise without weakening production type checks
 - [Phase ?]: COPY src before uv sync in Dockerfile: shortfire package must exist on disk for uv sync --locked --no-dev to install it into .venv
+- [01-04]: create_continuous_aggregate uses two separate op.execute calls (CREATE VIEW WITH NO DATA + add_continuous_aggregate_policy) — asyncpg forbids multi-statement prepared statements + Alembic transaction_per_migration=True forbids WITH DATA
+- [01-04]: Composite PK (id, ts) required on dead_letter and ingest_runs — TimescaleDB requires partition column (ts) in hypertable PK
+- [01-04]: symbols is relational (no create_hypertable), universe_snapshots partitions on DATE not TIMESTAMPTZ — D-63/D-64 locked
+- [01-04]: dead_letter.raw_payload is TEXT not JSONB — malformed JSON payloads must be storable; JSONB would reject them silently
 
 ### Pending Todos
 
@@ -113,5 +118,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-21T15:48:58.640Z
-Stopped at: Phase 1 UI-SPEC approved
-Resume file: .planning/phases/01-data-platform/01-UI-SPEC.md
+Stopped at: Completed Phase 01-04 (aux schema + continuous aggregates)
+Resume file: .planning/phases/01-data-platform/01-05-PLAN.md
