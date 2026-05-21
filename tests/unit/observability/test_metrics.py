@@ -10,6 +10,7 @@ Tests:
 
 from prometheus_client import REGISTRY as DEFAULT_REGISTRY
 from prometheus_client import CollectorRegistry, generate_latest
+
 from shortfire.observability.metrics import (
     LATENCY_BUCKETS,
     REGISTRY,
@@ -68,21 +69,22 @@ def test_kebab_case_service_name_normalized_to_snake_case() -> None:
 
 
 def test_histogram_has_locked_bucket_list() -> None:
-    """HTTP latency histogram must use the exact bucket list from UI-SPEC §Metric registry."""
+    """HTTP latency histogram must use the exact bucket list from UI-SPEC §Metric registry.
+
+    Note: labeled histograms only emit bucket sample lines after the first .labels().observe()
+    call. The LATENCY_BUCKETS constant is verified directly (source of truth); bucket lines
+    in rendered output are verified by making a labeled observation.
+    """
     expected = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0)
     assert expected == LATENCY_BUCKETS, (
         f"LATENCY_BUCKETS mismatch. Expected {expected}, got {LATENCY_BUCKETS}"
     )
-    # Verify the buckets appear in the rendered output
-    build_metrics_for_service("test_service_c")
+    # Trigger a label combination so bucket lines appear in rendered output
+    metrics = build_metrics_for_service("test_service_c")
+    metrics.http_request_duration_seconds.labels(method="GET", path="/health").observe(0.01)
     body = generate_latest(REGISTRY).decode()
     for bucket in expected:
-        assert (
-            f'le="{bucket}"' in body
-            or f'le="{int(bucket)}.0"' in body
-            or f'le="{bucket:.3f}"' in body
-            or str(bucket) in body
-        ), f"Bucket le={bucket} not found in metrics output"
+        assert f'le="{bucket}"' in body, f"Bucket le={bucket} not found in metrics output after observe()"
 
 
 def test_empty_state_contract_help_and_type_lines_present() -> None:
