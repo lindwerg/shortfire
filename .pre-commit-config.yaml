@@ -1,0 +1,51 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.13
+    hooks:
+      - id: ruff-format
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: local
+    hooks:
+      - id: ban-naive-timestamp
+        name: "Ban TIMESTAMP-without-tz in alembic and src"
+        entry: >-
+          bash -c
+          '! git diff --cached --name-only |
+          xargs grep -nE "TIMESTAMP[^(]" 2>/dev/null |
+          grep -E "^(alembic/versions|src)/" || true;
+          git diff --cached --name-only |
+          xargs grep -lnE "TIMESTAMP[^(]" 2>/dev/null |
+          grep -qE "^(alembic/versions|src)/" && exit 1 || exit 0'
+        language: system
+        pass_filenames: false
+        files: ^(alembic/versions/|src/).*\.py$
+
+      - id: ban-on-delete-cascade
+        name: "Ban ON DELETE CASCADE in alembic"
+        entry: >-
+          bash -c
+          'git diff --cached --name-only |
+          xargs grep -nilE "ON DELETE CASCADE" 2>/dev/null |
+          grep -q "^alembic/versions/" && exit 1 || exit 0'
+        language: system
+        pass_filenames: false
+        files: ^alembic/versions/.*\.py$
+
+      - id: ban-float-in-domain
+        name: "Ban float annotation in src/shortfire/domain"
+        entry: >-
+          bash -c
+          'git diff --cached --name-only --diff-filter=AM |
+          grep "^src/shortfire/domain/" |
+          xargs grep -lnE ": float\b" 2>/dev/null |
+          grep -q . && exit 1 || exit 0'
+        language: system
+        pass_filenames: false
+        files: ^src/shortfire/domain/.*\.py$

@@ -1,0 +1,13 @@
+title = "shortfire gitleaks config"
+
+[extend]
+useDefault = true  # inherit gitleaks' default ruleset
+
+[[allowlists]]
+description = "Ignore lock files and deterministic test fixtures"
+paths = [
+  '''uv\.lock''',
+  '''tests/fixtures/.*''',
+  '''tests/fakes/.*''',
+  '''\.env\.example''',  # template values are not real secrets
+]
