@@ -12,7 +12,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **FOUND-01**: Repository scaffold with uv + ruff + pyright + pytest + Hypothesis is set up and CI runs on every push
 - [ ] **FOUND-02**: Railway project with PostgreSQL 16 + TimescaleDB 2.18 extension is provisioned and connected from GitHub
 - [ ] **FOUND-03**: Alembic migrations with TimescaleDB-aware DDL (`create_hypertable`, compression policies) are wired and tested
-- [ ] **FOUND-04**: Pure domain types (`Candle`, `OrderBook`, `Funding`, `Liquidation`, `Signal`, `Order`, `Position`, `RiskLimits`) are defined as Pydantic models with property tests on invariants
+- [x] **FOUND-04**: Pure domain types (`Candle`, `OrderBook`, `Funding`, `Liquidation`, `Signal`, `Order`, `Position`, `RiskLimits`) are defined as Pydantic models with property tests on invariants
 - [ ] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
 - [x] **FOUND-06**: `.gitignore` covers `.env*`, secret scanning runs pre-commit, GitHub secret scanning is enabled
 - [ ] **FOUND-07**: pydantic-settings validates required env vars at service startup; missing/invalid config fails fast with clear error
@@ -268,7 +268,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-01 | Phase 0 | Complete |
 | FOUND-02 | Phase 0 | Pending |
 | FOUND-03 | Phase 0 | Pending |
-| FOUND-04 | Phase 0 | Pending |
+| FOUND-04 | Phase 0 | Complete |
 | FOUND-05 | Phase 0 | Pending |
 | FOUND-06 | Phase 0 | Complete |
 | FOUND-07 | Phase 0 | Pending |
