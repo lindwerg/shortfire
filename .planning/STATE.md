@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 00-06-PLAN.md
-last_updated: "2026-05-21T13:24:12.533Z"
+stopped_at: Completed 00-07-PLAN.md — Phase 0 all 8 plans done, ready for verification
+last_updated: "2026-05-21T14:17:45.329Z"
 last_activity: 2026-05-21
 progress:
   total_phases: 6
@@ -65,6 +65,7 @@ Progress: [██████████] 100%
 | Phase 00 P06 | 35 | 2 tasks | 6 files |
 | Phase 00 P08 | 10 | 2 tasks | 13 files |
 | Phase 00 P07 | 5 | 1 tasks | 5 files |
+| Phase 00 P07 | 52 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,10 @@ Decisions are logged in PROJECT.md Key Decisions table. The roadmap codifies the
 - [00-05]: Content-Type hardcoded to 0.0.4 — prometheus-client 0.25.0 changed CONTENT_TYPE_LATEST to 1.0.0; UI-SPEC mandates 0.0.4 for Prometheus scraper compatibility
 - [Phase ?]: [00-06] greenlet as explicit dep — SQLAlchemy 2.x async requires it at runtime; transitive-only pin fragile under uv lockfile
 - [Phase ?]: [00-06] compression-policy test uses _timescaledb_catalog assertions — timescaledb_information.compression_settings view column names differ across Timescale minor versions; catalog level is stable
+- [Phase ?]: railway startCommand requires sh -c wrap for dollar-PORT shell variable expansion
+- [Phase ?]: per-service railway.*.toml pattern: root railway.toml holds data-platform defaults; per-service files override startCommand and sleepApplication for gitops-verified config
+- [Phase ?]: pyright basic mode scoped to tests/: strict mode flagged test helper types; scoping to basic avoids CI noise without weakening production type checks
+- [Phase ?]: COPY src before uv sync in Dockerfile: shortfire package must exist on disk for uv sync --locked --no-dev to install it into .venv
 
 ### Pending Todos
 
@@ -107,6 +112,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T13:24:12.525Z
-Stopped at: Completed 00-06-PLAN.md
+Last session: 2026-05-21T14:17:45.321Z
+Stopped at: Completed 00-07-PLAN.md — Phase 0 all 8 plans done, ready for verification
 Resume file: None
