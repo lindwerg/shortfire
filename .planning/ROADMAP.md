@@ -50,7 +50,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 00-06-PLAN.md — docker-compose for local TimescaleDB + testcontainers integration tests (alembic upgrade head idempotent, service_event is hypertable, compression policy exists) — runtime gate for FOUND-03
+- [x] 00-06-PLAN.md — docker-compose for local TimescaleDB + testcontainers integration tests (alembic upgrade head idempotent, service_event is hypertable, compression policy exists) — runtime gate for FOUND-03
 - [ ] 00-07-PLAN.md — Railway 3-service deployment (Dockerfile + railway.toml + dashboard checkpoint for TimescaleDB marketplace + reference variables + preDeployCommand for migrations + branch protection + secret scanning)
 - [ ] 00-08-PLAN.md — 4 Protocol/Fake pairs (MexcClient/CoinglassClient/CoinGeckoClient/CandleRepo + their fakes in tests/fakes/) + GitHub Actions CI (ruff + pyright + pytest unit + pytest integration + gitleaks-action + coverage gate 80%)
 
@@ -139,7 +139,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Foundation | 5/8 | In Progress|  |
+| 0. Foundation | 6/8 | In Progress|  |
 | 1. Data Platform | 0/TBD | Not started | - |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |

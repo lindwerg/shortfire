@@ -209,7 +209,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TEST-02**: TDD discipline — every module starts with a failing test; documented in `CONTRIBUTING.md` or `AGENTS.md`
 - [ ] **TEST-03**: Property tests cover: feature causality, label-window funding boundaries, walk-forward purge invariants, `reduceOnly` invariants, order state machine transitions
 - [ ] **TEST-04**: Coverage gate: 80% project-wide, 95% on `risk/` and `execution/` modules
-- [ ] **TEST-05**: `tests/fakes/` provides deterministic fakes for every external boundary (MEXC, Coinglass, CoinGecko, OrderRouter, RiskGuard)
+- [x] **TEST-05**: `tests/fakes/` provides deterministic fakes for every external boundary (MEXC, Coinglass, CoinGecko, OrderRouter, RiskGuard)
 - [x] **TEST-06**: freezegun is used for time-dependent tests
 - [ ] **TEST-07**: Backtest reproducibility test: same `data_snapshot_id + code_commit` produces identical P&L
 
@@ -414,7 +414,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TEST-02 | Phase 0 | Complete |
 | TEST-03 | Phase 2 | Pending |
 | TEST-04 | Phase 2 | Pending |
-| TEST-05 | Phase 0 | Pending |
+| TEST-05 | Phase 0 | Complete |
 | TEST-06 | Phase 0 | Complete |
 | TEST-07 | Phase 3 | Pending |
 
