@@ -23,7 +23,6 @@ from typing import NamedTuple
 
 from fastapi import FastAPI, Response
 from prometheus_client import (
-    CONTENT_TYPE_LATEST,
     CollectorRegistry,
     Counter,
     Gauge,
@@ -39,6 +38,13 @@ REGISTRY = CollectorRegistry()
 
 # Bucket list locked by UI-SPEC §Metric registry — MUST NOT change without updating UI-SPEC
 LATENCY_BUCKETS: tuple[float, ...] = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0)
+
+# Module-level cache: service_name → ServiceMetrics
+# Ensures build_metrics_for_service is idempotent — calling it twice with the same name
+# returns the same metric instances instead of raising a ValueError from prometheus_client.
+# This is required for tests that re-import entrypoints (each import calls build_metrics_for_service
+# at module level; the REGISTRY is a module-level singleton that persists across re-imports).
+_metrics_cache: dict[str, "ServiceMetrics"] = {}
 
 
 class ServiceMetrics(NamedTuple):
@@ -69,7 +75,13 @@ def build_metrics_for_service(service_name: str) -> ServiceMetrics:
     # Normalize kebab-case → snake_case (Prometheus metric name convention)
     svc = service_name.replace("-", "_")
 
-    return ServiceMetrics(
+    # Idempotency guard: return cached instance if already registered.
+    # Prevents ValueError("Duplicated timeseries") when entrypoint modules are
+    # re-imported during tests while REGISTRY (module-level singleton) persists.
+    if svc in _metrics_cache:
+        return _metrics_cache[svc]
+
+    result = ServiceMetrics(
         http_requests_total=Counter(
             f"shortfire_{svc}_http_requests_total",
             "HTTP request count by method, path, and status code",
@@ -97,6 +109,9 @@ def build_metrics_for_service(service_name: str) -> ServiceMetrics:
         ),
     )
 
+    _metrics_cache[svc] = result
+    return result
+
 
 def install_metrics_endpoint(app: FastAPI) -> None:
     """Mount GET /metrics on the given FastAPI app.
@@ -112,7 +127,10 @@ def install_metrics_endpoint(app: FastAPI) -> None:
 
     @app.get("/metrics")
     def _metrics_handler() -> Response:  # pyright: ignore[reportUnusedFunction]
+        # UI-SPEC §/metrics locks the Content-Type to text/plain; version=0.0.4; charset=utf-8
+        # (classic Prometheus text exposition format). prometheus_client ≥0.20 changed
+        # CONTENT_TYPE_LATEST to "1.0.0" (OpenMetrics), so we override it explicitly.
         return Response(
             content=generate_latest(REGISTRY),
-            media_type=CONTENT_TYPE_LATEST,
+            media_type="text/plain; version=0.0.4; charset=utf-8",
         )

@@ -93,11 +93,17 @@ def test_data_platform_health_field_values(monkeypatch: pytest.MonkeyPatch) -> N
     assert body["env"] in ("local", "ci", "staging", "production")
     assert body["version"] == "0.1.0"
 
-    # correlation_id must be a UUID4
-    assert re.match(
+    # correlation_id must be a UUID4-derived hex string.
+    # asgi-correlation-id generates UUID4 as a 32-char lowercase hex (no dashes)
+    # OR as the canonical 8-4-4-4-12 dashed format, depending on version.
+    # Accept both forms.
+    cid = body["correlation_id"]
+    uuid4_hex = re.match(r"^[0-9a-f]{32}$", cid)
+    uuid4_dashed = re.match(
         r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-        body["correlation_id"],
-    ), f"correlation_id is not a valid UUID4: {body['correlation_id']!r}"
+        cid,
+    )
+    assert uuid4_hex or uuid4_dashed, f"correlation_id is not a valid UUID4 (hex or dashed): {cid!r}"
 
     # ts must be ISO-8601 UTC millisecond precision with Z suffix
     ts = body["ts"]
