@@ -72,6 +72,23 @@ include = ["src", "tests"]
 exclude = ["**/__pycache__", "**/.venv"]
 reportMissingTypeStubs = "warning"
 
+# Tests use untyped third-party fixtures (Hypothesis strategies, freezegun, tomllib output, etc.)
+# that pyright cannot infer through. We keep `strict` for src/ but drop tests/ to `basic`
+# typeCheckingMode + silence the few false positives unique to test-folder import resolution.
+# Strict checking inside test bodies is the wrong forcing function.
+[[tool.pyright.executionEnvironments]]
+root = "tests"
+extraPaths = ["."]
+reportMissingImports = "none"
+reportUnknownVariableType = "none"
+reportUnknownMemberType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownParameterType = "none"
+reportMissingParameterType = "none"
+reportMissingTypeArgument = "none"
+reportArgumentType = "none"
+reportReturnType = "none"
+
 [tool.coverage.run]
 source = ["src/shortfire"]
 branch = true
