@@ -33,18 +33,21 @@ def test_events_is_frozenset() -> None:
     assert isinstance(EVENTS, frozenset), f"EVENTS must be a frozenset, got {type(EVENTS)!r}"
 
 
-def test_events_has_exactly_12_strings() -> None:
-    """EVENTS must contain exactly 12 event name strings (UI-SPEC §Event Taxonomy)."""
-    assert len(EVENTS) == 12, f"EVENTS must have 12 strings, got {len(EVENTS)}: {sorted(EVENTS)}"
+def test_events_has_at_least_12_strings() -> None:
+    """EVENTS must contain at least 12 event name strings (Phase 0 baseline from UI-SPEC §Event Taxonomy).
+
+    Phase 1+ extensions add more events on top of the Phase 0 baseline; this test
+    remains valid as long as the 12 Phase 0 names are present and every entry is a str.
+    """
+    assert len(EVENTS) >= 12, f"EVENTS must have at least 12 strings, got {len(EVENTS)}: {sorted(EVENTS)}"
     for event in EVENTS:
         assert isinstance(event, str), f"All EVENTS must be strings, got {type(event)!r}: {event!r}"
 
 
-def test_events_matches_ui_spec_taxonomy_exactly() -> None:
-    """EVENTS must match the exact set of 12 events from UI-SPEC §Event Taxonomy."""
-    assert EVENTS == EXPECTED_EVENTS, (
-        f"EVENTS mismatch.\nMissing: {EXPECTED_EVENTS - EVENTS}\nExtra: {EVENTS - EXPECTED_EVENTS}"
-    )
+def test_events_contains_all_phase0_names() -> None:
+    """EVENTS must contain all 12 Phase 0 events from UI-SPEC §Event Taxonomy (backward compat)."""
+    missing = EXPECTED_EVENTS - EVENTS
+    assert not missing, f"Phase 0 EVENTS missing from registry (backward-compat broken): {missing}"
 
 
 def test_assert_event_registered_returns_none_for_known_event() -> None:
