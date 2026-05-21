@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 **Wave 1**
 
-- [ ] 00-01-PLAN.md — Repo skeleton: uv + pyproject.toml + ruff/pyright/pytest configs + pre-commit (ruff + gitleaks + 3 grep guards) + .gitignore + .env.example + AGENTS.md + package layout
+- [x] 00-01-PLAN.md — Repo skeleton: uv + pyproject.toml + ruff/pyright/pytest configs + pre-commit (ruff + gitleaks + 3 grep guards) + .gitignore + .env.example + AGENTS.md + package layout
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -139,7 +139,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Foundation | 0/8 | Not started | - |
+| 0. Foundation | 1/8 | In Progress|  |
 | 1. Data Platform | 0/TBD | Not started | - |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |

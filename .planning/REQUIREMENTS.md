@@ -9,12 +9,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Foundation (FOUND)
 
-- [ ] **FOUND-01**: Repository scaffold with uv + ruff + pyright + pytest + Hypothesis is set up and CI runs on every push
+- [x] **FOUND-01**: Repository scaffold with uv + ruff + pyright + pytest + Hypothesis is set up and CI runs on every push
 - [ ] **FOUND-02**: Railway project with PostgreSQL 16 + TimescaleDB 2.18 extension is provisioned and connected from GitHub
 - [ ] **FOUND-03**: Alembic migrations with TimescaleDB-aware DDL (`create_hypertable`, compression policies) are wired and tested
 - [ ] **FOUND-04**: Pure domain types (`Candle`, `OrderBook`, `Funding`, `Liquidation`, `Signal`, `Order`, `Position`, `RiskLimits`) are defined as Pydantic models with property tests on invariants
 - [ ] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
-- [ ] **FOUND-06**: `.gitignore` covers `.env*`, secret scanning runs pre-commit, GitHub secret scanning is enabled
+- [x] **FOUND-06**: `.gitignore` covers `.env*`, secret scanning runs pre-commit, GitHub secret scanning is enabled
 - [ ] **FOUND-07**: pydantic-settings validates required env vars at service startup; missing/invalid config fails fast with clear error
 - [ ] **FOUND-08**: `tests/fakes/` directory exists with `FakeMexcClient`, `FakeCoinglassClient`, `FakeCoinGeckoClient`, `InMemoryCandleRepo` interfaces
 
@@ -201,16 +201,16 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **OPS-05**: Commit → push → deploy to Railway after every completed task (per PROJECT.md DevOps requirement)
 - [ ] **OPS-06**: Three Railway services at v1: `data-platform`, `strategy-engine`, `dashboard`; fourth `risk-guard` added at live launch
 - [ ] **OPS-07**: Database migration discipline — Alembic migration files reviewed, applied in deploy step
-- [ ] **OPS-08**: Pre-commit hooks: ruff format, ruff lint, secret scan
+- [x] **OPS-08**: Pre-commit hooks: ruff format, ruff lint, secret scan
 
 ### Testing & TDD (TEST)
 
-- [ ] **TEST-01**: pytest + Hypothesis + pytest-asyncio configured; respx/aioresponses for API client mocks
-- [ ] **TEST-02**: TDD discipline — every module starts with a failing test; documented in `CONTRIBUTING.md` or `AGENTS.md`
+- [x] **TEST-01**: pytest + Hypothesis + pytest-asyncio configured; respx/aioresponses for API client mocks
+- [x] **TEST-02**: TDD discipline — every module starts with a failing test; documented in `CONTRIBUTING.md` or `AGENTS.md`
 - [ ] **TEST-03**: Property tests cover: feature causality, label-window funding boundaries, walk-forward purge invariants, `reduceOnly` invariants, order state machine transitions
 - [ ] **TEST-04**: Coverage gate: 80% project-wide, 95% on `risk/` and `execution/` modules
 - [ ] **TEST-05**: `tests/fakes/` provides deterministic fakes for every external boundary (MEXC, Coinglass, CoinGecko, OrderRouter, RiskGuard)
-- [ ] **TEST-06**: freezegun is used for time-dependent tests
+- [x] **TEST-06**: freezegun is used for time-dependent tests
 - [ ] **TEST-07**: Backtest reproducibility test: same `data_snapshot_id + code_commit` produces identical P&L
 
 ## v2 Requirements
@@ -265,12 +265,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 0 | Pending |
+| FOUND-01 | Phase 0 | Complete |
 | FOUND-02 | Phase 0 | Pending |
 | FOUND-03 | Phase 0 | Pending |
 | FOUND-04 | Phase 0 | Pending |
 | FOUND-05 | Phase 0 | Pending |
-| FOUND-06 | Phase 0 | Pending |
+| FOUND-06 | Phase 0 | Complete |
 | FOUND-07 | Phase 0 | Pending |
 | FOUND-08 | Phase 0 | Pending |
 | DATA-01 | Phase 1 | Pending |
@@ -409,13 +409,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-05 | Phase 1 | Pending |
 | OPS-06 | Phase 1 | Pending |
 | OPS-07 | Phase 0 | Pending |
-| OPS-08 | Phase 0 | Pending |
-| TEST-01 | Phase 0 | Pending |
-| TEST-02 | Phase 0 | Pending |
+| OPS-08 | Phase 0 | Complete |
+| TEST-01 | Phase 0 | Complete |
+| TEST-02 | Phase 0 | Complete |
 | TEST-03 | Phase 2 | Pending |
 | TEST-04 | Phase 2 | Pending |
 | TEST-05 | Phase 0 | Pending |
-| TEST-06 | Phase 0 | Pending |
+| TEST-06 | Phase 0 | Complete |
 | TEST-07 | Phase 3 | Pending |
 
 **Coverage:**
