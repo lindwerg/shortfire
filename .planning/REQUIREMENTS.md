@@ -13,7 +13,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **FOUND-02**: Railway project with PostgreSQL 16 + TimescaleDB 2.18 extension is provisioned and connected from GitHub
 - [x] **FOUND-03**: Alembic migrations with TimescaleDB-aware DDL (`create_hypertable`, compression policies) are wired and tested
 - [x] **FOUND-04**: Pure domain types (`Candle`, `OrderBook`, `Funding`, `Liquidation`, `Signal`, `Order`, `Position`, `RiskLimits`) are defined as Pydantic models with property tests on invariants
-- [ ] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
+- [x] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
 - [x] **FOUND-06**: `.gitignore` covers `.env*`, secret scanning runs pre-commit, GitHub secret scanning is enabled
 - [x] **FOUND-07**: pydantic-settings validates required env vars at service startup; missing/invalid config fails fast with clear error
 - [ ] **FOUND-08**: `tests/fakes/` directory exists with `FakeMexcClient`, `FakeCoinglassClient`, `FakeCoinGeckoClient`, `InMemoryCandleRepo` interfaces
@@ -197,7 +197,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **OPS-01**: GitHub repository created with protected `main` branch
 - [ ] **OPS-02**: Railway project connected to GitHub repo; auto-deploys on push to `main`
 - [ ] **OPS-03**: GitHub Actions CI runs on every PR: ruff + pyright + pytest (with coverage)
-- [ ] **OPS-04**: CI blocks merge on failing tests or coverage drop below 80% (95% on `risk/` and `execution/` modules)
+- [x] **OPS-04**: CI blocks merge on failing tests or coverage drop below 80% (95% on `risk/` and `execution/` modules)
 - [ ] **OPS-05**: Commit → push → deploy to Railway after every completed task (per PROJECT.md DevOps requirement)
 - [ ] **OPS-06**: Three Railway services at v1: `data-platform`, `strategy-engine`, `dashboard`; fourth `risk-guard` added at live launch
 - [x] **OPS-07**: Database migration discipline — Alembic migration files reviewed, applied in deploy step
@@ -269,7 +269,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-02 | Phase 0 | Pending |
 | FOUND-03 | Phase 0 | Complete |
 | FOUND-04 | Phase 0 | Complete |
-| FOUND-05 | Phase 0 | Pending |
+| FOUND-05 | Phase 0 | Complete |
 | FOUND-06 | Phase 0 | Complete |
 | FOUND-07 | Phase 0 | Complete |
 | FOUND-08 | Phase 0 | Pending |
@@ -405,7 +405,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-01 | Phase 0 | Pending |
 | OPS-02 | Phase 0 | Pending |
 | OPS-03 | Phase 0 | Pending |
-| OPS-04 | Phase 0 | Pending |
+| OPS-04 | Phase 0 | Complete |
 | OPS-05 | Phase 1 | Pending |
 | OPS-06 | Phase 1 | Pending |
 | OPS-07 | Phase 0 | Complete |

@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 00-04-PLAN.md
-last_updated: "2026-05-21T12:33:12.314Z"
+last_updated: "2026-05-21T12:52:09.982Z"
 last_activity: 2026-05-21
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 8
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -27,11 +27,11 @@ See: .planning/ROADMAP.md (created 2026-05-21)
 ## Current Position
 
 Phase: 00 (foundation) — EXECUTING
-Plan: 5 of 8
+Plan: 6 of 8
 Status: Ready to execute
 Last activity: 2026-05-21
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 63%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [█████░░░░░] 50%
 | Phase 00 P02 | 480 | 2 tasks | 14 files |
 | Phase 00 P03 | 600 | 2 tasks | 11 files |
 | Phase 00 P04 | 720 | 2 tasks | 14 files |
+| Phase 00 P05 | 45min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,9 @@ Decisions are logged in PROJECT.md Key Decisions table. The roadmap codifies the
 - Phase 4: Kill switch exists in Phase 4 paper, NOT Phase 5 — first time you need one in live is too late
 - Phase 5: `risk-guard` becomes a separate Railway service at live launch (not in-process); staged autonomy controlled by DB row update, no deploy
 - [Phase ?]: asyncpg-only Postgres driver (D-30); rewrite_url public alias for pyright; migration ordering 0001->0002 enforces timescaledb extension loads before create_hypertable
+- [00-05]: PrintLoggerFactory not LoggerFactory — stdlib adds INFO:name: prefix making NDJSON unparseable; PrintLoggerFactory writes directly to stdout
+- [00-05]: Metrics idempotency cache — _metrics_cache in metrics.py prevents ValueError on re-import when REGISTRY singleton persists across test module reloads
+- [00-05]: Content-Type hardcoded to 0.0.4 — prometheus-client 0.25.0 changed CONTENT_TYPE_LATEST to 1.0.0; UI-SPEC mandates 0.0.4 for Prometheus scraper compatibility
 
 ### Pending Todos
 
@@ -99,5 +103,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-05-21T12:33:12.307Z
-Stopped at: Completed 00-04-PLAN.md
+Stopped at: Completed 00-05-PLAN.md
 Resume file: None
