@@ -71,9 +71,9 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Domain `Source` literal widening (D-59) + ingest infrastructure (retry, rate-limit, copy_into_hypertable, dead_letter writer, context) + coverage gate removal of `src/shortfire/ingest/*` omit
-- [ ] 01-02-PLAN.md — Observability extensions (17 events, 8 metric families on existing REGISTRY, raw-httpx Telegram) + settings extensions (TelegramSettings + R2BackupSettings on DataPlatformSettings)
-- [ ] 01-03-PLAN.md — Alembic migrations 0003–0008 (7 MEXC-native hypertables: candles 1m+1d, funding, oi, trades, l2_top20, liquidations) + integration tests (schema/hypertable existence, source CHECK rejection, DATA-09 Hypothesis idempotency keystone)
+- [x] 01-01-PLAN.md — Domain `Source` literal widening (D-59) + ingest infrastructure (retry, rate-limit, copy_into_hypertable, dead_letter writer, context) + coverage gate removal of `src/shortfire/ingest/*` omit
+- [x] 01-02-PLAN.md — Observability extensions (17 events, 8 metric families on existing REGISTRY, raw-httpx Telegram) + settings extensions (TelegramSettings + R2BackupSettings on DataPlatformSettings)
+- [x] 01-03-PLAN.md — Alembic migrations 0003–0008 (7 MEXC-native hypertables: candles 1m+1d, funding, oi, trades, l2_top20, liquidations) + integration tests (schema/hypertable existence, source CHECK rejection, DATA-09 Hypothesis idempotency keystone)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 0/TBD | Not started | - |
+| 1. Data Platform | 3/11 | In Progress|  |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |
