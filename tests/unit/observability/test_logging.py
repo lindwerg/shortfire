@@ -12,6 +12,7 @@ import re
 
 import structlog
 from asgi_correlation_id import correlation_id
+
 from shortfire.observability.logging import configure_logging
 
 

@@ -7,6 +7,7 @@ Tests:
 """
 
 import pytest
+
 from shortfire.observability.events import EVENTS, assert_event_registered
 
 EXPECTED_EVENTS = frozenset(

@@ -13,8 +13,9 @@ Usage in migrations:
     add_compression_policy("my_table", after_age="7 days")
 """
 
-from alembic import op
 from sqlalchemy import text
+
+from alembic import op
 
 
 def create_hypertable(
