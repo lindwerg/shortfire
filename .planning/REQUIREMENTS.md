@@ -265,13 +265,176 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (Populated during ROADMAP.md creation) | — | Pending |
+| FOUND-01 | Phase 0 | Pending |
+| FOUND-02 | Phase 0 | Pending |
+| FOUND-03 | Phase 0 | Pending |
+| FOUND-04 | Phase 0 | Pending |
+| FOUND-05 | Phase 0 | Pending |
+| FOUND-06 | Phase 0 | Pending |
+| FOUND-07 | Phase 0 | Pending |
+| FOUND-08 | Phase 0 | Pending |
+| DATA-01 | Phase 1 | Pending |
+| DATA-02 | Phase 1 | Pending |
+| DATA-03 | Phase 1 | Pending |
+| DATA-04 | Phase 1 | Pending |
+| DATA-05 | Phase 1 | Pending |
+| DATA-06 | Phase 1 | Pending |
+| DATA-07 | Phase 1 | Pending |
+| DATA-08 | Phase 1 | Pending |
+| DATA-09 | Phase 1 | Pending |
+| DATA-10 | Phase 1 | Pending |
+| DATA-11 | Phase 1 | Pending |
+| DATA-12 | Phase 1 | Pending |
+| STOR-01 | Phase 1 | Pending |
+| STOR-02 | Phase 1 | Pending |
+| STOR-03 | Phase 1 | Pending |
+| STOR-04 | Phase 1 | Pending |
+| STOR-05 | Phase 1 | Pending |
+| STOR-06 | Phase 1 | Pending |
+| STOR-07 | Phase 1 | Pending |
+| STOR-08 | Phase 1 | Pending |
+| STOR-09 | Phase 1 | Pending |
+| STOR-10 | Phase 1 | Pending |
+| UNIV-01 | Phase 1 | Pending |
+| UNIV-02 | Phase 1 | Pending |
+| UNIV-03 | Phase 1 | Pending |
+| UNIV-04 | Phase 1 | Pending |
+| ORCH-01 | Phase 1 | Pending |
+| ORCH-02 | Phase 1 | Pending |
+| ORCH-03 | Phase 1 | Pending |
+| ORCH-04 | Phase 1 | Pending |
+| FEAT-01 | Phase 2 | Pending |
+| FEAT-02 | Phase 2 | Pending |
+| FEAT-03 | Phase 2 | Pending |
+| FEAT-04 | Phase 2 | Pending |
+| FEAT-05 | Phase 2 | Pending |
+| FEAT-06 | Phase 2 | Pending |
+| FEAT-07 | Phase 2 | Pending |
+| FEAT-08 | Phase 2 | Pending |
+| FEAT-09 | Phase 2 | Pending |
+| FEAT-10 | Phase 2 | Pending |
+| FEAT-11 | Phase 2 | Pending |
+| FEAT-12 | Phase 2 | Pending |
+| FEAT-13 | Phase 2 | Pending |
+| FEAT-14 | Phase 2 | Pending |
+| LABEL-01 | Phase 2 | Pending |
+| LABEL-02 | Phase 2 | Pending |
+| LABEL-03 | Phase 2 | Pending |
+| LABEL-04 | Phase 2 | Pending |
+| ML-01 | Phase 2 | Pending |
+| ML-02 | Phase 2 | Pending |
+| ML-03 | Phase 2 | Pending |
+| ML-04 | Phase 2 | Pending |
+| ML-05 | Phase 2 | Pending |
+| ML-06 | Phase 2 | Pending |
+| ML-07 | Phase 2 | Pending |
+| ML-08 | Phase 2 | Pending |
+| TRAIN-01 | Phase 2 | Pending |
+| TRAIN-02 | Phase 2 | Pending |
+| TRAIN-03 | Phase 2 | Pending |
+| TRAIN-04 | Phase 2 | Pending |
+| TRAIN-05 | Phase 2 | Pending |
+| TRAIN-06 | Phase 2 | Pending |
+| TRAIN-07 | Phase 2 | Pending |
+| STRAT-01 | Phase 3 | Pending |
+| STRAT-02 | Phase 3 | Pending |
+| STRAT-03 | Phase 3 | Pending |
+| STRAT-04 | Phase 3 | Pending |
+| STRAT-05 | Phase 3 | Pending |
+| BACK-01 | Phase 3 | Pending |
+| BACK-02 | Phase 3 | Pending |
+| BACK-03 | Phase 3 | Pending |
+| BACK-04 | Phase 3 | Pending |
+| BACK-05 | Phase 3 | Pending |
+| BACK-06 | Phase 3 | Pending |
+| BACK-07 | Phase 3 | Pending |
+| BACK-08 | Phase 3 | Pending |
+| BACK-09 | Phase 3 | Pending |
+| BACK-10 | Phase 3 | Pending |
+| BACK-11 | Phase 3 | Pending |
+| BACK-12 | Phase 3 | Pending |
+| PAPER-01 | Phase 4 | Pending |
+| PAPER-02 | Phase 4 | Pending |
+| PAPER-03 | Phase 4 | Pending |
+| PAPER-04 | Phase 4 | Pending |
+| PAPER-05 | Phase 4 | Pending |
+| PAPER-06 | Phase 4 | Pending |
+| PAPER-07 | Phase 4 | Pending |
+| PAPER-08 | Phase 4 | Pending |
+| PAPER-09 | Phase 4 | Pending |
+| RISK-01 | Phase 4 | Pending |
+| RISK-02 | Phase 4 | Pending |
+| RISK-03 | Phase 4 | Pending |
+| RISK-04 | Phase 4 | Pending |
+| RISK-05 | Phase 4 | Pending |
+| RISK-06 | Phase 4 | Pending |
+| RISK-07 | Phase 4 | Pending |
+| RISK-08 | Phase 4 | Pending |
+| RISK-09 | Phase 4 | Pending |
+| RISK-10 | Phase 4 | Pending |
+| RISK-11 | Phase 4 | Pending |
+| RISK-12 | Phase 4 | Pending |
+| RISK-13 | Phase 5 | Pending |
+| EXEC-01 | Phase 4 | Pending |
+| EXEC-02 | Phase 4 | Pending |
+| EXEC-03 | Phase 4 | Pending |
+| EXEC-04 | Phase 4 | Pending |
+| EXEC-05 | Phase 4 | Pending |
+| EXEC-06 | Phase 4 | Pending |
+| EXEC-07 | Phase 4 | Pending |
+| EXEC-08 | Phase 4 | Pending |
+| EXEC-09 | Phase 4 | Pending |
+| LIVE-01 | Phase 5 | Pending |
+| LIVE-02 | Phase 5 | Pending |
+| LIVE-03 | Phase 5 | Pending |
+| LIVE-04 | Phase 5 | Pending |
+| LIVE-05 | Phase 5 | Pending |
+| LIVE-06 | Phase 5 | Pending |
+| LIVE-07 | Phase 5 | Pending |
+| LIVE-08 | Phase 5 | Pending |
+| LIVE-09 | Phase 5 | Pending |
+| LIVE-10 | Phase 5 | Pending |
+| LIVE-11 | Phase 5 | Pending |
+| OBS-01 | Phase 4 | Pending |
+| OBS-02 | Phase 4 | Pending |
+| OBS-03 | Phase 4 | Pending |
+| OBS-04 | Phase 4 | Pending |
+| OBS-05 | Phase 4 | Pending |
+| OBS-06 | Phase 5 | Pending |
+| OBS-07 | Phase 5 | Pending |
+| OPS-01 | Phase 0 | Pending |
+| OPS-02 | Phase 0 | Pending |
+| OPS-03 | Phase 0 | Pending |
+| OPS-04 | Phase 0 | Pending |
+| OPS-05 | Phase 1 | Pending |
+| OPS-06 | Phase 1 | Pending |
+| OPS-07 | Phase 0 | Pending |
+| OPS-08 | Phase 0 | Pending |
+| TEST-01 | Phase 0 | Pending |
+| TEST-02 | Phase 0 | Pending |
+| TEST-03 | Phase 2 | Pending |
+| TEST-04 | Phase 2 | Pending |
+| TEST-05 | Phase 0 | Pending |
+| TEST-06 | Phase 0 | Pending |
+| TEST-07 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 119 total (counted across all sections)
-- Mapped to phases: 0 (filled by roadmapper)
-- Unmapped: 119 ⚠️ (until roadmap is generated)
+- v1 requirements: 152 total (counted across all sections)
+- Mapped to phases: 152 ✓
+- Unmapped: 0 ✓
+
+**Coverage by phase:**
+
+| Phase | Count | Requirements |
+|-------|-------|--------------|
+| Phase 0: Foundation | 18 | FOUND-01..08, OPS-01..04, OPS-07, OPS-08, TEST-01, TEST-02, TEST-05, TEST-06 |
+| Phase 1: Data Platform | 32 | DATA-01..12, STOR-01..10, UNIV-01..04, ORCH-01..04, OPS-05, OPS-06 |
+| Phase 2: Strategy Research + ML Methodology | 35 | FEAT-01..14, LABEL-01..04, ML-01..08, TRAIN-01..07, TEST-03, TEST-04 |
+| Phase 3: Backtester + Strategy Framework | 18 | STRAT-01..05, BACK-01..12, TEST-07 |
+| Phase 4: Paper Trading (HARD GATE) | 35 | PAPER-01..09, RISK-01..12, EXEC-01..09, OBS-01..05 |
+| Phase 5: Live Trading | 14 | LIVE-01..11, RISK-13, OBS-06, OBS-07 |
+| **Total** | **152** | |
 
 ---
 *Requirements defined: 2026-05-21*
-*Last updated: 2026-05-21 after initial definition*
+*Last updated: 2026-05-21 after roadmap creation (traceability populated)*
