@@ -12,8 +12,11 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-# Task 1 types — imported here; Task 2 will add the remaining 3
+# Task 1 types — market data
 from shortfire.domain.market import Candle, Funding, Liquidation, OrderBook, OrderBookLevel
+
+# Task 2 types — trading
+from shortfire.domain.trading import Order, Position, Signal
 
 
 def _naive_candle() -> dict[str, Any]:
@@ -62,17 +65,54 @@ def _naive_liquidation() -> dict[str, Any]:
     }
 
 
-_TASK1_CASES = [
+def _naive_signal() -> dict[str, Any]:
+    return {
+        "symbol": "BTCUSDT",
+        "side": "short",
+        "kind": "pump_short",
+        "ts": datetime(2026, 5, 21),  # naive
+        "confidence": Decimal("0.75"),
+    }
+
+
+def _naive_order() -> dict[str, Any]:
+    return {
+        "client_order_id": "x",
+        "symbol": "BTCUSDT",
+        "intent": "open",
+        "side": "short",
+        "order_type": "market",
+        "quantity": Decimal("1.0"),
+        "reduce_only": False,
+        "ts": datetime(2026, 5, 21),  # naive
+    }
+
+
+def _naive_position() -> dict[str, Any]:
+    return {
+        "symbol": "BTCUSDT",
+        "side": "short",
+        "qty": Decimal("1.0"),
+        "avg_entry_price": Decimal("50000"),
+        "opened_ts": datetime(2026, 5, 21),  # naive
+        "last_update_ts": datetime(2026, 5, 21, tzinfo=UTC),
+    }
+
+
+_ALL_CASES = [
     (Candle, _naive_candle()),
     (OrderBook, _naive_orderbook()),
     (Funding, _naive_funding()),
     (Liquidation, _naive_liquidation()),
+    (Signal, _naive_signal()),
+    (Order, _naive_order()),
+    (Position, _naive_position()),
 ]
 
-_TASK1_IDS = ["Candle", "OrderBook", "Funding", "Liquidation"]
+_ALL_IDS = ["Candle", "OrderBook", "Funding", "Liquidation", "Signal", "Order", "Position"]
 
 
-@pytest.mark.parametrize("model_cls,kwargs", _TASK1_CASES, ids=_TASK1_IDS)
+@pytest.mark.parametrize("model_cls,kwargs", _ALL_CASES, ids=_ALL_IDS)
 def test_naive_datetime_raises(model_cls: type, kwargs: dict[str, Any]) -> None:
     """Every domain type with a ts field rejects a naive datetime."""
     with pytest.raises(ValidationError, match=r"timezone-aware|tzinfo"):
