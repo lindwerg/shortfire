@@ -7,19 +7,24 @@ Tests:
   4. HTTP error does NOT propagate — Telegram failure must not crash the caller.
 """
 
+import httpx
 import pytest
 import respx
 from httpx import Response
 from pydantic import SecretStr
-from shortfire.observability.telegram import send_telegram_alert
 
+from shortfire.observability.telegram import send_telegram_alert
 from shortfire.settings.data_platform import DataPlatformSettings, TelegramSettings
+
+_DB_URL = "postgresql://user:pass@localhost:5432/testdb"
 
 
 @pytest.fixture()
-def settings_with_telegram() -> DataPlatformSettings:
+def settings_with_telegram(monkeypatch: pytest.MonkeyPatch) -> DataPlatformSettings:
     """DataPlatformSettings with TelegramSettings configured."""
-    return DataPlatformSettings(
+    monkeypatch.setenv("ENV", "ci")
+    monkeypatch.setenv("DATABASE_URL", _DB_URL)
+    return DataPlatformSettings(  # type: ignore[call-arg]
         telegram=TelegramSettings(
             bot_token=SecretStr("TESTTOK"),
             operator_chat_id="12345",
@@ -28,13 +33,17 @@ def settings_with_telegram() -> DataPlatformSettings:
 
 
 @pytest.fixture()
-def settings_no_telegram() -> DataPlatformSettings:
+def settings_no_telegram(monkeypatch: pytest.MonkeyPatch) -> DataPlatformSettings:
     """DataPlatformSettings with telegram=None (default)."""
-    return DataPlatformSettings()
+    monkeypatch.setenv("ENV", "ci")
+    monkeypatch.setenv("DATABASE_URL", _DB_URL)
+    return DataPlatformSettings()  # type: ignore[call-arg]
 
 
 @pytest.mark.asyncio
-async def test_send_alert_skips_when_telegram_none(settings_no_telegram: DataPlatformSettings) -> None:
+async def test_send_alert_skips_when_telegram_none(
+    settings_no_telegram: DataPlatformSettings,
+) -> None:
     """When settings.telegram is None, send_telegram_alert returns without POSTing (graceful skip)."""
     with respx.mock(assert_all_mocked=True):
         # No routes registered — if a POST fires, respx raises an error.
@@ -43,11 +52,13 @@ async def test_send_alert_skips_when_telegram_none(settings_no_telegram: DataPla
 
 
 @pytest.mark.asyncio
-async def test_send_alert_posts_to_telegram_api(settings_with_telegram: DataPlatformSettings) -> None:
+async def test_send_alert_posts_to_telegram_api(
+    settings_with_telegram: DataPlatformSettings,
+) -> None:
     """send_telegram_alert POSTs to api.telegram.org/bot{TOKEN}/sendMessage with correct JSON."""
     captured_json: dict[str, object] = {}
 
-    def capture(request: respx.models.Request) -> Response:
+    def capture(request: httpx.Request) -> Response:
         import json
 
         captured_json.update(json.loads(request.content))
@@ -66,11 +77,13 @@ async def test_send_alert_posts_to_telegram_api(settings_with_telegram: DataPlat
 
 
 @pytest.mark.asyncio
-async def test_send_alert_severity_crit(settings_with_telegram: DataPlatformSettings) -> None:
+async def test_send_alert_severity_crit(
+    settings_with_telegram: DataPlatformSettings,
+) -> None:
     """send_telegram_alert uses 🚨 CRIT prefix for severity='crit'."""
     captured_text: list[str] = []
 
-    def capture(request: respx.models.Request) -> Response:
+    def capture(request: httpx.Request) -> Response:
         import json
 
         data = json.loads(request.content)
@@ -86,12 +99,14 @@ async def test_send_alert_severity_crit(settings_with_telegram: DataPlatformSett
 
 
 @pytest.mark.asyncio
-async def test_body_truncated_to_4000_chars(settings_with_telegram: DataPlatformSettings) -> None:
+async def test_body_truncated_to_4000_chars(
+    settings_with_telegram: DataPlatformSettings,
+) -> None:
     """Body + prefix is truncated to 4000 chars total (D-86 Telegram message limit)."""
     long_body = "x" * 5000
     captured_text: list[str] = []
 
-    def capture(request: respx.models.Request) -> Response:
+    def capture(request: httpx.Request) -> Response:
         import json
 
         data = json.loads(request.content)
@@ -107,7 +122,9 @@ async def test_body_truncated_to_4000_chars(settings_with_telegram: DataPlatform
 
 
 @pytest.mark.asyncio
-async def test_http_error_does_not_propagate(settings_with_telegram: DataPlatformSettings) -> None:
+async def test_http_error_does_not_propagate(
+    settings_with_telegram: DataPlatformSettings,
+) -> None:
     """HTTP 5xx from Telegram must NOT raise — caller must not crash (D-86 swallow rule)."""
     with respx.mock() as mock:
         mock.post(url__regex=r"https://api\.telegram\.org/bot.+/sendMessage").mock(

@@ -43,6 +43,31 @@ class CoingeckoSettings(BaseModel):
     api_key: SecretStr
 
 
+class TelegramSettings(BaseModel):
+    """Telegram Bot API credentials for operational alerts (D-86).
+
+    Used by shortfire.observability.telegram.send_telegram_alert to post
+    severity-prefixed messages to the operator chat.
+    SecretStr masking (D-19) applies: bot_token is never exposed in repr or safe_summary.
+    """
+
+    bot_token: SecretStr
+    operator_chat_id: str
+
+
+class R2BackupSettings(BaseModel):
+    """Cloudflare R2 credentials for pg_dump backup uploads (D-83, D-80).
+
+    All credential fields are SecretStr (D-19).
+    safe_summary() exposes only r2_backup_configured=bool — never raw values (D-21).
+    """
+
+    account_id: str
+    access_key_id: SecretStr
+    secret_access_key: SecretStr
+    bucket_name: str
+
+
 class DataPlatformSettings(BaseAppSettings):
     """Settings for the data-platform Railway service.
 
@@ -52,7 +77,7 @@ class DataPlatformSettings(BaseAppSettings):
     Even if they do appear (misconfiguration), pydantic-settings ignores them (no field),
     AND assert_no_trade_env_leaked() will crash the service at startup.
 
-    Phase 1+ wires: mexc, coinglass, coingecko
+    Phase 1 wires: mexc, coinglass, coingecko, telegram (alerts), r2_backup (backups).
     """
 
     service_name: str = "data-platform"
@@ -63,17 +88,28 @@ class DataPlatformSettings(BaseAppSettings):
     coinglass: CoinglassSettings | None = None
     coingecko: CoingeckoSettings | None = None
 
+    # Phase 1 additions — optional operational blocks.
+    # D-83 / D-86: Telegram for alerts; R2 for pg_dump backups.
+    telegram: TelegramSettings | None = None
+    r2_backup: R2BackupSettings | None = None
+
     # D-16 structural absence: NO mexc_trade field here.
     # StrategyEngineSettings declares mexc_trade for Phase 5.
 
     def safe_summary(self) -> dict[str, object]:
-        """Extend base summary with boolean flags for optional credential blocks (D-21)."""
+        """Extend base summary with boolean flags for optional credential blocks (D-21).
+
+        Returns boolean flags only — never raw SecretStr values (D-21 invariant).
+        telegram_configured and r2_backup_configured added in Phase 1 (D-83, D-86).
+        """
         base = super().safe_summary()
         base.update(
             {
                 "mexc_read_configured": self.mexc is not None,
                 "coinglass_configured": self.coinglass is not None,
                 "coingecko_configured": self.coingecko is not None,
+                "telegram_configured": self.telegram is not None,
+                "r2_backup_configured": self.r2_backup is not None,
             }
         )
         return base
