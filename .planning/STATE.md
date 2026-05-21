@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-09-PLAN.md
-last_updated: "2026-05-21T20:05:00.675Z"
-last_activity: 2026-05-21
+stopped_at: Completed 01-10-PLAN.md
+last_updated: "2026-05-22T00:00:00.000Z"
+last_activity: 2026-05-22
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 19
-  completed_plans: 17
+  completed_plans: 18
   percent: 17
 ---
 
@@ -27,11 +27,11 @@ See: .planning/ROADMAP.md (created 2026-05-21)
 ## Current Position
 
 Phase: 01 (data-platform) — EXECUTING
-Plan: 9 of 11
+Plan: 10 of 11
 Status: Ready to execute
 Last activity: 2026-05-21
 
-Progress: [█████████░] 89%
+Progress: [██████████] 95%
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [█████████░] 89%
 | Phase 01 P04 | 180 | 2 tasks | 15 files |
 | Phase 01-data-platform P08 | 120min | 2 tasks | 17 files |
 | Phase 01 P09 | 25h | 2 tasks | 19 files |
+| Phase 01-data-platform P01-10 | 90 | 2 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,10 @@ Decisions are logged in PROJECT.md Key Decisions table. The roadmap codifies the
 - [Phase 01-data-platform]: STOR-09: flag_gap uses Decimal(0) OHLCV sentinel rows with quality_flag=gap_detected
 - [Phase 01-data-platform]: Pitfall 27: zero bare asyncio.create_task — all ws tasks via TaskGroup.create_task
 - [Phase ?]: APScheduler 4.0.0a6 pinned exact alpha; D-78: ws streams are TaskGroup-owned; D-79: all job callables are top-level async functions
+- [01-10]: Option B freshness gauges — gauge stores unix-timestamp-of-last-write NOT a duration; alerter computes lag = now - gauge_value (RESEARCH.md Open Q1)
+- [01-10]: _parse_key_dt from key name — _sundown_sweep uses timestamp embedded in key name (daily/YYYYMMDDTHHMMSSZ.dump.zst) for calendar checks; NOT S3 LastModified which moto sets to datetime.now()
+- [01-10]: D-81 B3 reconciliation in-phase — full 4-tier retention (7d+4w+6m+annual) shipped via S3 copy_object; annual/ never swept per D-81 indefinite record
+- [01-10]: moto async workaround — use with mock_aws(): context manager NOT @mock_aws decorator with pytest-asyncio; patch _build_r2_client to avoid botocore endpoint_url validation
 
 ### Pending Todos
 
@@ -125,6 +130,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T20:05:00.667Z
-Stopped at: Completed 01-09-PLAN.md
+Last session: 2026-05-22T00:00:00.000Z
+Stopped at: Completed 01-10-PLAN.md
 Resume file: None

@@ -95,7 +95,7 @@ Plans:
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
-- [ ] 01-10-PLAN.md — Freshness gauges + stale-data Telegram alerter (D-87 severity routing) + dead_letter threshold alerter + R2 daily pg_dump backup (`--format=custom --compress=zstd:9`, `PGPASSWORD` env DSN, full D-81 retention roll-up: 7d+4w+6m+annual via S3 copy_object) + Dockerfile `postgresql-client-16` + `docs/RESTORE.md` + ORCH-04 + STOR-10 keystones
+- [x] 01-10-PLAN.md — Freshness gauges + stale-data Telegram alerter (D-87 severity routing) + dead_letter threshold alerter + R2 daily pg_dump backup (`--format=custom --compress=zstd:9`, `PGPASSWORD` env DSN, full D-81 retention roll-up: 7d+4w+6m+annual via S3 copy_object) + Dockerfile `postgresql-client-16` + `docs/RESTORE.md` + ORCH-04 + STOR-10 keystones
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 9/11 | In Progress|  |
+| 1. Data Platform | 10/11 | In Progress|  |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |

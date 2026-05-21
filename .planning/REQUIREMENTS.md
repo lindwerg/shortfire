@@ -44,7 +44,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **STOR-07**: Symbol lifecycle handled via soft delete (`delisted_at` column); `ON DELETE CASCADE` is banned
 - [ ] **STOR-08**: Backfill of 1–2 years of historical data completes successfully for OHLCV + funding (Coinglass Startup tier limits accepted for 1m derivatives — defer Standard tier decision to Phase 2)
 - [x] **STOR-09**: Backfill gaps are flagged with a `quality_flag` column rather than silently interpolated
-- [ ] **STOR-10**: Daily `pg_dump` to external storage (R2/B2) runs and is verifiable
+- [x] **STOR-10**: Daily `pg_dump` to external storage (R2/B2) runs and is verifiable
 
 ### Universe Filtering (UNIV)
 
@@ -57,8 +57,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **ORCH-01**: APScheduler 4.x runs in the `data-platform` service with Postgres jobstore for persistence
 - [x] **ORCH-02**: Ingest cadence is scheduler-controlled per source (e.g. MEXC OHLCV: every minute; Coinglass funding: hourly; CoinGecko: daily)
-- [ ] **ORCH-03**: Data freshness gauge per source is exposed in Prometheus `/metrics`
-- [ ] **ORCH-04**: Stale-data Telegram alert fires when any source exceeds expected lag
+- [x] **ORCH-03**: Data freshness gauge per source is exposed in Prometheus `/metrics`
+- [x] **ORCH-04**: Stale-data Telegram alert fires when any source exceeds expected lag
 
 ### Feature Engineering (FEAT)
 
@@ -294,15 +294,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STOR-07 | Phase 1 | Complete |
 | STOR-08 | Phase 1 | Pending |
 | STOR-09 | Phase 1 | Complete |
-| STOR-10 | Phase 1 | Pending |
+| STOR-10 | Phase 1 | Complete |
 | UNIV-01 | Phase 1 | Complete |
 | UNIV-02 | Phase 1 | Complete |
 | UNIV-03 | Phase 1 | Complete |
 | UNIV-04 | Phase 1 | Complete |
 | ORCH-01 | Phase 1 | Complete |
 | ORCH-02 | Phase 1 | Complete |
-| ORCH-03 | Phase 1 | Pending |
-| ORCH-04 | Phase 1 | Pending |
+| ORCH-03 | Phase 1 | Complete |
+| ORCH-04 | Phase 1 | Complete |
 | FEAT-01 | Phase 2 | Pending |
 | FEAT-02 | Phase 2 | Pending |
 | FEAT-03 | Phase 2 | Pending |
