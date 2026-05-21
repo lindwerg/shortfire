@@ -20,6 +20,20 @@ from shortfire.domain.market import (
     Timeframe,
 )
 
+# Risk management types (D-14: risk.py)
+from shortfire.domain.risk import RiskLimits
+
+# Trading types (D-14: trading.py)
+from shortfire.domain.trading import (
+    Order,
+    OrderIntent,
+    OrderType,
+    Position,
+    Signal,
+    SignalKind,
+    SignalSide,
+)
+
 __all__ = [
     # market types
     "Candle",
@@ -30,4 +44,14 @@ __all__ = [
     "OrderBookLevel",
     "Source",
     "Timeframe",
+    # risk types
+    "RiskLimits",
+    # trading types
+    "Order",
+    "OrderIntent",
+    "OrderType",
+    "Position",
+    "Signal",
+    "SignalKind",
+    "SignalSide",
 ]
