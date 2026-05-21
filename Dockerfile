@@ -33,6 +33,12 @@ COPY --from=ghcr.io/astral-sh/uv:0.5.4 /uv /uvx /usr/local/bin/
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
+# uv sync installs the project itself (editable .pth → /app/src/shortfire) AND its
+# dependencies, so the package source MUST be present before `uv sync` runs.
+# Without this, the resolved venv contains every dependency but NOT shortfire,
+# producing `ModuleNotFoundError: No module named 'shortfire'` at runtime
+# (caught during the first Railway deploy).
+COPY src ./src
 
 # --no-dev: production image never ships test/dev tooling.
 # --locked: hard-pin exact versions from uv.lock; never resolve floating deps.
