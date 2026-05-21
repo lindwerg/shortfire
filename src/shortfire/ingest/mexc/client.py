@@ -72,6 +72,16 @@ class MexcClient:
     def __init__(self, raw_client: Any) -> None:
         self._client = raw_client
 
+    @property
+    def ws_client(self) -> Any:
+        """Expose the underlying ccxt.pro.mexc instance for ws stream operations.
+
+        Used by live-ingest modules (live_candles, funding, trades, orderbook,
+        liquidations) to call watch_* methods that are not part of the public
+        MexcClient Protocol (plan 01-08, D-43/44/46/47/48).
+        """
+        return self._client
+
     @mexc_retry
     async def fetch_ohlcv(
         self,
