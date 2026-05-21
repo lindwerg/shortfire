@@ -16,7 +16,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
 - [x] **FOUND-06**: `.gitignore` covers `.env*`, secret scanning runs pre-commit, GitHub secret scanning is enabled
 - [x] **FOUND-07**: pydantic-settings validates required env vars at service startup; missing/invalid config fails fast with clear error
-- [ ] **FOUND-08**: `tests/fakes/` directory exists with `FakeMexcClient`, `FakeCoinglassClient`, `FakeCoinGeckoClient`, `InMemoryCandleRepo` interfaces
+- [x] **FOUND-08**: `tests/fakes/` directory exists with `FakeMexcClient`, `FakeCoinglassClient`, `FakeCoinGeckoClient`, `InMemoryCandleRepo` interfaces
 
 ### Data Platform — Ingest (DATA)
 
@@ -196,7 +196,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **OPS-01**: GitHub repository created with protected `main` branch
 - [ ] **OPS-02**: Railway project connected to GitHub repo; auto-deploys on push to `main`
-- [ ] **OPS-03**: GitHub Actions CI runs on every PR: ruff + pyright + pytest (with coverage)
+- [x] **OPS-03**: GitHub Actions CI runs on every PR: ruff + pyright + pytest (with coverage)
 - [x] **OPS-04**: CI blocks merge on failing tests or coverage drop below 80% (95% on `risk/` and `execution/` modules)
 - [ ] **OPS-05**: Commit → push → deploy to Railway after every completed task (per PROJECT.md DevOps requirement)
 - [ ] **OPS-06**: Three Railway services at v1: `data-platform`, `strategy-engine`, `dashboard`; fourth `risk-guard` added at live launch
@@ -272,7 +272,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-05 | Phase 0 | Complete |
 | FOUND-06 | Phase 0 | Complete |
 | FOUND-07 | Phase 0 | Complete |
-| FOUND-08 | Phase 0 | Pending |
+| FOUND-08 | Phase 0 | Complete |
 | DATA-01 | Phase 1 | Pending |
 | DATA-02 | Phase 1 | Pending |
 | DATA-03 | Phase 1 | Pending |
@@ -404,7 +404,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OBS-07 | Phase 5 | Pending |
 | OPS-01 | Phase 0 | Pending |
 | OPS-02 | Phase 0 | Pending |
-| OPS-03 | Phase 0 | Pending |
+| OPS-03 | Phase 0 | Complete |
 | OPS-04 | Phase 0 | Complete |
 | OPS-05 | Phase 1 | Pending |
 | OPS-06 | Phase 1 | Pending |
