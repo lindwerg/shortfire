@@ -5,6 +5,7 @@ and the runtime assert_no_trade_env_leaked() guardrail.
 """
 
 import pytest
+
 from shortfire.settings.data_platform import (
     DataPlatformSettings,
     assert_no_trade_env_leaked,

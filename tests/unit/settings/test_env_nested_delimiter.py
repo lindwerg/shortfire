@@ -5,7 +5,8 @@ and that _env_file() returns None only when ENV=production.
 """
 
 import pytest
-from shortfire.settings.base import _env_file
+
+from shortfire.settings.base import env_file as _env_file
 from shortfire.settings.data_platform import DataPlatformSettings
 
 
@@ -21,7 +22,7 @@ def test_mexc_read_key_routes_via_nested_delimiter(monkeypatch: pytest.MonkeyPat
     monkeypatch.setenv("MEXC__READ_KEY", "key_value_abc")
     monkeypatch.setenv("MEXC__READ_SECRET", "secret_value_def")
 
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
 
     assert settings.mexc is not None, "mexc should be populated when MEXC__READ_KEY is set"
     assert settings.mexc.read_key.get_secret_value() == "key_value_abc", (
@@ -37,7 +38,7 @@ def test_coinglass_api_key_routes_via_nested_delimiter(monkeypatch: pytest.Monke
     _set_base_env(monkeypatch)
     monkeypatch.setenv("COINGLASS__API_KEY", "cg_key_123")
 
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
 
     assert settings.coinglass is not None, "coinglass should be populated when COINGLASS__API_KEY is set"
     assert settings.coinglass.api_key.get_secret_value() == "cg_key_123"
@@ -48,7 +49,7 @@ def test_coingecko_api_key_routes_via_nested_delimiter(monkeypatch: pytest.Monke
     _set_base_env(monkeypatch)
     monkeypatch.setenv("COINGECKO__API_KEY", "gecko_key_456")
 
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
 
     assert settings.coingecko is not None, "coingecko should be populated when COINGECKO__API_KEY is set"
     assert settings.coingecko.api_key.get_secret_value() == "gecko_key_456"

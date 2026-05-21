@@ -5,6 +5,7 @@ Fails fast with field-level error messages when required fields (e.g., DATABASE_
 
 import pytest
 from pydantic_settings import BaseSettings
+
 from shortfire.settings.dashboard import DashboardSettings
 
 # Import settings classes — will fail to import until Task 1 GREEN phase creates them
@@ -57,6 +58,5 @@ def test_missing_database_url_error_references_db_url_field(
     error_locs = [e.get("loc", ()) for e in errors]
     error_msgs = [str(e.get("msg", "")) for e in errors]
     combined = str(error_locs) + str(error_msgs)
-    assert "db" in combined or "DATABASE_URL" in combined or "url" in combined, (
-        f"Expected error to reference db/DATABASE_URL/url; got: {errors}"
-    )
+    db_referenced = any(token in combined for token in ("db", "DATABASE_URL", "url", "database_url"))
+    assert db_referenced, f"Expected error to reference db/DATABASE_URL/url; got: {errors}"

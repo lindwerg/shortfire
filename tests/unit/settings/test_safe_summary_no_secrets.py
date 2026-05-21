@@ -8,6 +8,7 @@ import json
 
 import pytest
 from pydantic import SecretStr
+
 from shortfire.settings.data_platform import DataPlatformSettings
 
 
@@ -24,7 +25,7 @@ def _set_required_env(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_safe_summary_returns_no_secretstr_instances(monkeypatch: pytest.MonkeyPatch) -> None:
     """D-21: no value in safe_summary() output is a SecretStr instance."""
     _set_required_env(monkeypatch)
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
     summary = settings.safe_summary()
 
     for key, value in summary.items():
@@ -33,7 +34,10 @@ def test_safe_summary_returns_no_secretstr_instances(monkeypatch: pytest.MonkeyP
         )
         # Also check nested dicts
         if isinstance(value, dict):
-            for sub_key, sub_val in value.items():
+            from typing import cast as _cast
+
+            nested = _cast(dict[str, object], value)
+            for sub_key, sub_val in nested.items():
                 assert not isinstance(sub_val, SecretStr), (
                     f"safe_summary() nested key '{key}.{sub_key}' must not be SecretStr"
                 )
@@ -42,7 +46,7 @@ def test_safe_summary_returns_no_secretstr_instances(monkeypatch: pytest.MonkeyP
 def test_safe_summary_json_contains_no_secret_values(monkeypatch: pytest.MonkeyPatch) -> None:
     """D-21: JSON-serialized safe_summary must not contain any of the dummy secret strings."""
     _set_required_env(monkeypatch)
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
     summary = settings.safe_summary()
 
     serialized = json.dumps(summary, default=str)
@@ -57,10 +61,10 @@ def test_safe_summary_db_host_does_not_contain_password(monkeypatch: pytest.Monk
     """D-21: safe_summary() must strip the password from db_host.
 
     The db URL is postgresql://user:password@localhost:5432/testdb.
-    safe_summary() must log db_host as 'localhost:5432/testdb', NOT the full URL.
+    safe_summary() must log db_host as 'localhost:5432', NOT the full URL.
     """
     _set_required_env(monkeypatch)
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
     summary = settings.safe_summary()
 
     serialized = json.dumps(summary, default=str)
@@ -70,7 +74,7 @@ def test_safe_summary_db_host_does_not_contain_password(monkeypatch: pytest.Monk
 def test_safe_summary_shows_configured_booleans(monkeypatch: pytest.MonkeyPatch) -> None:
     """D-21: safe_summary() shows boolean flags for configured credentials."""
     _set_required_env(monkeypatch)
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
     summary = settings.safe_summary()
 
     assert summary.get("mexc_read_configured") is True, "mexc_read_configured should be True"
@@ -84,7 +88,7 @@ def test_safe_summary_shows_not_configured_when_absent(monkeypatch: pytest.Monke
     monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@localhost:5432/testdb")
     # No MEXC, Coinglass, or CoinGecko env vars set
 
-    settings = DataPlatformSettings()
+    settings = DataPlatformSettings()  # type: ignore[call-arg]
     summary = settings.safe_summary()
 
     assert summary.get("mexc_read_configured") is False, "mexc_read_configured should be False"
