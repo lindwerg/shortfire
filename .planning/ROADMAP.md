@@ -13,7 +13,7 @@ Six phases take ShortFIRE from empty repo to live capital under hybrid autonomy.
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 0: Foundation** - TDD scaffolding, Railway+TimescaleDB, CI/CD, domain types, observability skeleton
+- [x] **Phase 0: Foundation** - TDD scaffolding, Railway+TimescaleDB, CI/CD, domain types, observability skeleton (completed 2026-05-21)
 - [ ] **Phase 1: Data Platform** - MEXC/Coinglass/CoinGecko ingest, typed hypertables, universe snapshots, 1-2yr backfill
 - [ ] **Phase 2: Strategy Research + ML Methodology** - Causal feature primitives, pump detection, triple-barrier labeling, PurgedWalkForward, XGBoost/LightGBM baseline with MLflow + SHAP
 - [ ] **Phase 3: Backtester + Strategy Framework** - Strategy Protocol, event-driven backtester with book-walk slippage, ShortAfterPumpStrategy, deterministic reproducibility
@@ -51,7 +51,7 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 00-06-PLAN.md — docker-compose for local TimescaleDB + testcontainers integration tests (alembic upgrade head idempotent, service_event is hypertable, compression policy exists) — runtime gate for FOUND-03
-- [ ] 00-07-PLAN.md — Railway 3-service deployment (Dockerfile + railway.toml + dashboard checkpoint for TimescaleDB marketplace + reference variables + preDeployCommand for migrations + branch protection + secret scanning)
+- [x] 00-07-PLAN.md — Railway 3-service deployment (Dockerfile + railway.toml + dashboard checkpoint for TimescaleDB marketplace + reference variables + preDeployCommand for migrations + branch protection + secret scanning)
 - [x] 00-08-PLAN.md — 4 Protocol/Fake pairs (MexcClient/CoinglassClient/CoinGeckoClient/CandleRepo + their fakes in tests/fakes/) + GitHub Actions CI (ruff + pyright + pytest unit + pytest integration + gitleaks-action + coverage gate 80%)
 
 ### Phase 1: Data Platform
@@ -139,7 +139,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Foundation | 7/8 | In Progress|  |
+| 0. Foundation | 8/8 | Complete   | 2026-05-21 |
 | 1. Data Platform | 0/TBD | Not started | - |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |

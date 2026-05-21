@@ -10,7 +10,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Foundation (FOUND)
 
 - [x] **FOUND-01**: Repository scaffold with uv + ruff + pyright + pytest + Hypothesis is set up and CI runs on every push
-- [ ] **FOUND-02**: Railway project with PostgreSQL 16 + TimescaleDB 2.18 extension is provisioned and connected from GitHub
+- [x] **FOUND-02**: Railway project with PostgreSQL 16 + TimescaleDB 2.18 extension is provisioned and connected from GitHub
 - [x] **FOUND-03**: Alembic migrations with TimescaleDB-aware DDL (`create_hypertable`, compression policies) are wired and tested
 - [x] **FOUND-04**: Pure domain types (`Candle`, `OrderBook`, `Funding`, `Liquidation`, `Signal`, `Order`, `Position`, `RiskLimits`) are defined as Pydantic models with property tests on invariants
 - [x] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
@@ -194,8 +194,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### DevOps / CI-CD (OPS)
 
-- [ ] **OPS-01**: GitHub repository created with protected `main` branch
-- [ ] **OPS-02**: Railway project connected to GitHub repo; auto-deploys on push to `main`
+- [x] **OPS-01**: GitHub repository created with protected `main` branch
+- [x] **OPS-02**: Railway project connected to GitHub repo; auto-deploys on push to `main`
 - [x] **OPS-03**: GitHub Actions CI runs on every PR: ruff + pyright + pytest (with coverage)
 - [x] **OPS-04**: CI blocks merge on failing tests or coverage drop below 80% (95% on `risk/` and `execution/` modules)
 - [ ] **OPS-05**: Commit → push → deploy to Railway after every completed task (per PROJECT.md DevOps requirement)
@@ -266,7 +266,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | FOUND-01 | Phase 0 | Complete |
-| FOUND-02 | Phase 0 | Pending |
+| FOUND-02 | Phase 0 | Complete |
 | FOUND-03 | Phase 0 | Complete |
 | FOUND-04 | Phase 0 | Complete |
 | FOUND-05 | Phase 0 | Complete |
@@ -402,8 +402,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OBS-05 | Phase 4 | Pending |
 | OBS-06 | Phase 5 | Pending |
 | OBS-07 | Phase 5 | Pending |
-| OPS-01 | Phase 0 | Pending |
-| OPS-02 | Phase 0 | Pending |
+| OPS-01 | Phase 0 | Complete |
+| OPS-02 | Phase 0 | Complete |
 | OPS-03 | Phase 0 | Complete |
 | OPS-04 | Phase 0 | Complete |
 | OPS-05 | Phase 1 | Pending |
