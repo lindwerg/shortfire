@@ -81,9 +81,9 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-05-PLAN.md — Concrete `MexcClient` (ccxt 4.5 swap, pin `>=4.5.54,<4.6`) + 4 Pydantic v2 strict schemas with `to_domain()` + paginated REST OHLCV/funding backfill (`asyncio.Semaphore(8)`) + `FakeMexcClient.with_synthetic_candles` classmethod constructor + DATA-01 integration keystone
-- [ ] 01-06-PLAN.md — Concrete `CoinglassClient` (httpx HTTP/2, `aiolimiter(28/60)` per Hobbyist) + 4 endpoint Pydantic schemas + 4 per-endpoint fetcher modules with `source='coinglass_aggregate'` + DATA-07 integration keystone
-- [ ] 01-07-PLAN.md — Concrete `CoinGeckoClient` (httpx, Demo-tier `x-cg-demo-api-key` header) + 2 Pydantic schemas + daily universe-metadata fetcher writing to `raw_coingecko_market` + DATA-08 integration keystone
+- [x] 01-05-PLAN.md — Concrete `MexcClient` (ccxt 4.5 swap, pin `>=4.5.54,<4.6`) + 4 Pydantic v2 strict schemas with `to_domain()` + paginated REST OHLCV/funding backfill (`asyncio.Semaphore(8)`) + `FakeMexcClient.with_synthetic_candles` classmethod constructor + DATA-01 integration keystone
+- [x] 01-06-PLAN.md — Concrete `CoinglassClient` (httpx HTTP/2, `aiolimiter(28/60)` per Hobbyist) + 4 endpoint Pydantic schemas + 4 per-endpoint fetcher modules with `source='coinglass_aggregate'` + DATA-07 integration keystone
+- [x] 01-07-PLAN.md — Concrete `CoinGeckoClient` (httpx, Demo-tier `x-cg-demo-api-key` header) + 2 Pydantic schemas + daily universe-metadata fetcher writing to `raw_coingecko_market` + DATA-08 integration keystone
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 4/11 | In Progress|  |
+| 1. Data Platform | 7/11 | In Progress|  |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |
