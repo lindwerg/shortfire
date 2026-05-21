@@ -1,0 +1,21 @@
+"$schema" = "https://railway.com/railway.schema.json"
+
+# railway.strategy-engine.toml — config-as-code override for the strategy-engine service (D-03).
+#
+# Shares the same Dockerfile (and resulting image) as data-platform and dashboard;
+# only startCommand and sleep behaviour differ per D-03 / D-04.
+#
+# In Railway dashboard: Service → Settings → Config-as-Code → Railway Config File
+# Set to: railway.strategy-engine.toml
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "uvicorn shortfire.entrypoints.strategy_engine:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
+sleepApplication = true   # D-04: strategy-engine sleeps when idle in Phase 0

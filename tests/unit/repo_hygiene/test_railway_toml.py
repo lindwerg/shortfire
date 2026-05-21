@@ -16,11 +16,79 @@ import tomllib
 
 ROOT = pathlib.Path(__file__).parent.parent.parent.parent
 RAILWAY_TOML = ROOT / "railway.toml"
+RAILWAY_STRATEGY_ENGINE_TOML = ROOT / "railway.strategy-engine.toml"
+RAILWAY_DASHBOARD_TOML = ROOT / "railway.dashboard.toml"
 
 
 def _load() -> dict:
     with RAILWAY_TOML.open("rb") as fh:
         return tomllib.load(fh)
+
+
+def _load_path(path: pathlib.Path) -> dict:
+    with path.open("rb") as fh:
+        return tomllib.load(fh)
+
+
+def test_strategy_engine_toml_exists() -> None:
+    assert RAILWAY_STRATEGY_ENGINE_TOML.exists(), (
+        "railway.strategy-engine.toml missing — required for strategy-engine config-as-code"
+    )
+
+
+def test_dashboard_toml_exists() -> None:
+    assert RAILWAY_DASHBOARD_TOML.exists(), (
+        "railway.dashboard.toml missing — required for dashboard config-as-code"
+    )
+
+
+def test_strategy_engine_start_command_references_correct_entrypoint() -> None:
+    doc = _load_path(RAILWAY_STRATEGY_ENGINE_TOML)
+    start_cmd = doc["deploy"]["startCommand"]
+    expected = "shortfire.entrypoints.strategy_engine"
+    assert expected in start_cmd, f"strategy-engine startCommand must reference {expected}, got {start_cmd!r}"
+
+
+def test_dashboard_start_command_references_correct_entrypoint() -> None:
+    doc = _load_path(RAILWAY_DASHBOARD_TOML)
+    start_cmd = doc["deploy"]["startCommand"]
+    assert "shortfire.entrypoints.dashboard" in start_cmd, (
+        f"dashboard startCommand must reference shortfire.entrypoints.dashboard, got {start_cmd!r}"
+    )
+
+
+def test_strategy_engine_sleeps_when_idle() -> None:
+    """D-04: strategy-engine is sleep-when-idle in Phase 0."""
+    doc = _load_path(RAILWAY_STRATEGY_ENGINE_TOML)
+    assert doc["deploy"].get("sleepApplication") is True, (
+        "strategy-engine sleepApplication must be true (D-04)"
+    )
+
+
+def test_dashboard_sleeps_when_idle() -> None:
+    """D-04: dashboard is sleep-when-idle in Phase 0."""
+    doc = _load_path(RAILWAY_DASHBOARD_TOML)
+    assert doc["deploy"].get("sleepApplication") is True, "dashboard sleepApplication must be true (D-04)"
+
+
+def test_strategy_engine_has_no_predeploy_command() -> None:
+    """Only data-platform runs alembic migrations; strategy-engine must NOT.
+
+    Two services racing on `alembic upgrade head` is a known TimescaleDB foot-gun
+    (advisory lock contention).
+    """
+    doc = _load_path(RAILWAY_STRATEGY_ENGINE_TOML)
+    assert "preDeployCommand" not in doc["deploy"], (
+        "strategy-engine must not set preDeployCommand — only data-platform runs migrations"
+    )
+
+
+def test_dashboard_has_no_predeploy_command() -> None:
+    """Only data-platform runs alembic migrations; dashboard must NOT."""
+    doc = _load_path(RAILWAY_DASHBOARD_TOML)
+    assert "preDeployCommand" not in doc["deploy"], (
+        "dashboard must not set preDeployCommand — only data-platform runs migrations"
+    )
 
 
 def test_railway_toml_exists() -> None:
