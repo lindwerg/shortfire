@@ -15,7 +15,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **FOUND-04**: Pure domain types (`Candle`, `OrderBook`, `Funding`, `Liquidation`, `Signal`, `Order`, `Position`, `RiskLimits`) are defined as Pydantic models with property tests on invariants
 - [ ] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
 - [x] **FOUND-06**: `.gitignore` covers `.env*`, secret scanning runs pre-commit, GitHub secret scanning is enabled
-- [ ] **FOUND-07**: pydantic-settings validates required env vars at service startup; missing/invalid config fails fast with clear error
+- [x] **FOUND-07**: pydantic-settings validates required env vars at service startup; missing/invalid config fails fast with clear error
 - [ ] **FOUND-08**: `tests/fakes/` directory exists with `FakeMexcClient`, `FakeCoinglassClient`, `FakeCoinGeckoClient`, `InMemoryCandleRepo` interfaces
 
 ### Data Platform — Ingest (DATA)
@@ -271,7 +271,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-04 | Phase 0 | Complete |
 | FOUND-05 | Phase 0 | Pending |
 | FOUND-06 | Phase 0 | Complete |
-| FOUND-07 | Phase 0 | Pending |
+| FOUND-07 | Phase 0 | Complete |
 | FOUND-08 | Phase 0 | Pending |
 | DATA-01 | Phase 1 | Pending |
 | DATA-02 | Phase 1 | Pending |
