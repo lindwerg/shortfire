@@ -30,6 +30,8 @@ from asgi_correlation_id import correlation_id as correlation_id_var
 from fastapi import FastAPI, Response
 
 from shortfire import __version__
+from shortfire.db.engine import create_engine_from_env
+from shortfire.ingest.scheduler.bootstrap import scheduler_lifespan
 from shortfire.observability.events import assert_event_registered
 from shortfire.observability.logging import configure_logging
 from shortfire.observability.metrics import build_metrics_for_service, install_metrics_endpoint
@@ -65,14 +67,56 @@ metrics.build_info.labels(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """FastAPI lifespan: emit service.startup and service.settings.loaded events."""
+    """FastAPI lifespan: startup + scheduler + optional ws streams + shutdown.
+
+    D-76: Composes AsyncScheduler (cron/interval jobs) + MEXC ws TaskGroup
+    under one lifespan so graceful shutdown propagates to both.
+
+    Ordering (critical):
+      1. scheduler_lifespan enters first — initialises APScheduler DB tables
+         and starts background job processing.
+      2. mexc_ws_streams enters second (INSIDE scheduler ctx) — continuous ws
+         streams start after the scheduler is ready.
+      3. On lifespan exit: ws TaskGroup cancels first, then scheduler stops.
+         This ensures ws streams stop emitting data before the scheduler's
+         persistence layer closes (preventing ingest_runs writes after DB close).
+
+    Degraded mode: if MEXC settings are absent, ws streams are skipped;
+    scheduler still runs for non-MEXC jobs (Coinglass, CoinGecko, backups).
+
+    D-78: continuous ws tasks are TaskGroup-owned here — NOT APScheduler-managed.
+    """
     assert_event_registered("service.startup")
     log.info("service.startup", version=__version__, pid=os.getpid())
 
     assert_event_registered("service.settings.loaded")
     log.info("service.settings.loaded", **settings.safe_summary())
 
-    yield
+    engine = create_engine_from_env()
+
+    if settings.mexc is None:
+        # Degraded mode: no MEXC keys — ws streams disabled, scheduler-only
+        log.warning("service.degraded", reason="MEXC settings absent — ws streams disabled")
+        async with scheduler_lifespan(engine):
+            yield
+    else:
+        from shortfire.ingest.mexc.client import build_mexc_swap_client
+        from shortfire.ingest.mexc.streams import mexc_ws_streams
+
+        mexc_client = build_mexc_swap_client(settings)
+        try:
+            # tier-1 / universe loaded at first scheduler run; first-boot uses empty set
+            symbols: list[str] = []
+            tier1: list[str] = []
+            # D-76: nested contexts preserve ordering: scheduler enters first,
+            # ws streams enter second; shutdown reverses: ws cancels, then scheduler stops.
+            # noqa: SIM117 — nested `with` is intentional here to preserve ordering semantics
+            async with scheduler_lifespan(engine):  # noqa: SIM117
+                async with mexc_ws_streams(engine, mexc_client, symbols, tier1, settings):
+                    yield
+        finally:
+            await mexc_client.close()
+            await engine.dispose()
 
     assert_event_registered("service.shutdown")
     log.info("service.shutdown")
