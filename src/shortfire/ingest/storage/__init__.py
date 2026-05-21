@@ -1,1 +1,1 @@
-"""Hypertable write helpers — hot-path asyncpg COPY path."""
+"""Storage layer for ingest hot-path writes."""

@@ -39,7 +39,7 @@ def _candle(symbol: str, ts: datetime, price: str = "100") -> Candle:
     p = Decimal(price)
     return Candle(
         symbol=symbol,
-        source="mexc",
+        source="mexc_native",
         timeframe="1m",
         ts=ts,
         open=p,

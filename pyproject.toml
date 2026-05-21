@@ -95,6 +95,5 @@ branch = true
 omit = [
     "src/shortfire/risk/*",
     "src/shortfire/execution/*",
-    "src/shortfire/ingest/*",
     "src/shortfire/strategy/*",
 ]

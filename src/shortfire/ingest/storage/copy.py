@@ -1,32 +1,33 @@
-"""Hot-path hypertable write helper — asyncpg COPY → UNLOGGED staging → INSERT ON CONFLICT.
+"""Single-helper hypertable write path via asyncpg COPY (D-62, D-70).
 
-SECURITY (T-1-IDEM-01): conflict policy is DO NOTHING (first-write-wins) per D-62.
-NEVER use DO UPDATE — this guarantees idempotency (DATA-09).
+Pattern (RESEARCH.md §2 Pattern 1):
+  1. Materialize records to list; short-circuit return 0 if empty.
+  2. Create UNLOGGED staging table (IF NOT EXISTS) per session for speed.
+  3. TRUNCATE staging table.
+  4. Use asyncpg copy_records_to_table for bulk insert into staging.
+  5. INSERT INTO target SELECT ... ON CONFLICT (conflict_cols) DO NOTHING.
+  6. Return count of records inserted.
 
-D-62 / D-70: All hot-path writes route through this single helper.
-  Staging tables are UNLOGGED per-session (speed); conflict policy DO NOTHING (correctness).
+Security (T-1-INF-01):
+  target_table is an f-string substitution. Callers MUST pass hardcoded table name
+  literals from D-58 only — never a user-controlled string. Pyright strict mode
+  catches dynamic string callers at type-check time.
 
-Usage:
-    rows = await copy_into_hypertable(
-        engine,
-        "raw_mexc_candles_1m",
-        records,
-        columns=("symbol", "ts", "open", "high", "low", "close", "volume", "source", "quality_flag"),
-        conflict_columns=("symbol", "ts"),
-    )
+Invariant (D-62):
+  ON CONFLICT DO NOTHING (first-write-wins).
+  Re-ingest cannot produce duplicates by construction.
+  Upsert via the alternative conflict handler is FORBIDDEN in this module.
+
+Pitfall P1-D (from RESEARCH.md §12):
+  asyncpg raw connection is obtained via:
+    raw_conn = (await conn.get_raw_connection()).driver_connection
+  Not via conn.raw_connection (old SQLAlchemy 1.x API).
 """
 
 from collections.abc import Iterable
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncEngine
-
-# Per-session UNLOGGED staging table DDL (D-62, D-70)
-# LIKE INCLUDING DEFAULTS copies server_default values so staging accepts the same records.
-_STAGING_DDL = """
-CREATE UNLOGGED TABLE IF NOT EXISTS {staging} (LIKE {target} INCLUDING DEFAULTS);
-TRUNCATE TABLE {staging};
-"""
 
 
 async def copy_into_hypertable(
@@ -36,25 +37,26 @@ async def copy_into_hypertable(
     columns: tuple[str, ...],
     conflict_columns: tuple[str, ...],
 ) -> int:
-    """COPY → UNLOGGED staging → INSERT … ON CONFLICT DO NOTHING. Returns record count.
+    """COPY records into a TimescaleDB hypertable via asyncpg staging pattern.
 
-    D-62/D-70: staging is per-session UNLOGGED for speed; conflict policy is DO NOTHING
-    (first-write-wins). NEVER DO UPDATE — idempotency is structural, not behavioral
-    (DATA-09 invariant, proved by test_idempotency.py Hypothesis property test).
-
-    Implementation uses SQLAlchemy 2.x AsyncEngine to obtain the raw asyncpg connection
-    via the driver_connection attribute (SQLA 2.0.49 escape hatch).
+    Implements the RESEARCH.md §2 Pattern 1 COPY → staging → INSERT … ON CONFLICT
+    DO NOTHING write path. Returns the number of records processed.
 
     Args:
-        engine: SQLAlchemy 2.x async engine connected to TimescaleDB.
-        target_table: Target hypertable name — must be a compile-time constant.
-        records: Iterable of tuples in the same order as columns.
-        columns: Column names matching the target table schema.
-        conflict_columns: Columns forming the ON CONFLICT target (dedup key).
+        engine: SQLAlchemy AsyncEngine backed by asyncpg.
+        target_table: Hardcoded table name (e.g. 'raw_mexc_candles_1m'). MUST be
+            a literal constant from D-58 — never a user-controlled value.
+        records: Iterable of row tuples matching the column order.
+        columns: Column names in the same order as the record tuples.
+        conflict_columns: Columns forming the uniqueness key for ON CONFLICT.
 
     Returns:
-        Number of records in the input batch (not the inserted count — ON CONFLICT
-        suppresses the PostgreSQL row count; refined in Phase 2 if needed).
+        Number of records in the batch (0 if empty, short-circuited without DB call).
+
+    Note:
+        ON CONFLICT DO NOTHING (first-write-wins per D-62).
+        Upserting via the alternative conflict handler is forbidden — re-ingest
+        must not overwrite existing rows.
     """
     records_list = list(records)
     if not records_list:
@@ -65,21 +67,30 @@ async def copy_into_hypertable(
     col_list = ", ".join(columns)
 
     async with engine.connect() as conn:
-        # Obtain the raw asyncpg connection for copy_records_to_table access.
-        # SQLAlchemy 2.0.49 pattern: get_raw_connection() returns AsyncAdaptedQueueConnection;
-        # .driver_connection gives the underlying asyncpg.Connection.
-        raw_driver = await conn.get_raw_connection()
-        asyncpg_conn = raw_driver.driver_connection
+        raw_connection_obj = await conn.get_raw_connection()
+        raw_conn = raw_connection_obj.driver_connection
+        assert raw_conn is not None, "asyncpg driver_connection must not be None"
 
-        async with asyncpg_conn.transaction():
-            await asyncpg_conn.execute(_STAGING_DDL.format(staging=staging, target=target_table))
-            await asyncpg_conn.copy_records_to_table(staging, records=records_list, columns=list(columns))
-            await asyncpg_conn.execute(
-                f"""
-                INSERT INTO {target_table} ({col_list})
-                SELECT {col_list} FROM {staging}
-                ON CONFLICT ({conflict_cols}) DO NOTHING
-                """
+        async with raw_conn.transaction():
+            # Create UNLOGGED staging table (per-session, fast)
+            await raw_conn.execute(
+                f"CREATE UNLOGGED TABLE IF NOT EXISTS {staging}"
+                f" (LIKE {target_table} INCLUDING DEFAULTS);"
+                f" TRUNCATE TABLE {staging};"
+            )
+
+            # Bulk copy via asyncpg native COPY protocol
+            await raw_conn.copy_records_to_table(
+                staging,
+                records=records_list,
+                columns=columns,
+            )
+
+            # Merge from staging into target — ON CONFLICT DO NOTHING (D-62)
+            await raw_conn.execute(
+                f"INSERT INTO {target_table} ({col_list})"
+                f" SELECT {col_list} FROM {staging}"
+                f" ON CONFLICT ({conflict_cols}) DO NOTHING"
             )
 
     return len(records_list)

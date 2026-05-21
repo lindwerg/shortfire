@@ -25,7 +25,7 @@ def test_orderbook_bids_must_be_descending() -> None:
     with pytest.raises(ValidationError, match=r"bid|descend"):
         OrderBook(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             ts=datetime(2026, 5, 21, tzinfo=UTC),
             bids=(_level("100"), _level("101")),  # ascending — wrong
             asks=(_level("102"), _level("103")),
@@ -37,7 +37,7 @@ def test_orderbook_asks_must_be_ascending() -> None:
     with pytest.raises(ValidationError, match=r"ask|ascend"):
         OrderBook(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             ts=datetime(2026, 5, 21, tzinfo=UTC),
             bids=(_level("100"), _level("99")),
             asks=(_level("103"), _level("102")),  # descending — wrong
@@ -49,7 +49,7 @@ def test_orderbook_not_crossed() -> None:
     with pytest.raises(ValidationError, match=r"cross"):
         OrderBook(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             ts=datetime(2026, 5, 21, tzinfo=UTC),
             bids=(_level("105"), _level("104")),  # best bid 105 >= best ask 105
             asks=(_level("105"), _level("106")),
@@ -61,7 +61,7 @@ def test_orderbook_naive_datetime_raises() -> None:
     with pytest.raises(ValidationError, match=r"timezone-aware|tzinfo"):
         OrderBook(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             ts=datetime(2026, 5, 21),  # naive
             bids=(_level("100"), _level("99")),
             asks=(_level("101"), _level("102")),
@@ -72,7 +72,7 @@ def test_orderbook_happy_path() -> None:
     """Valid OrderBook constructs and round-trips."""
     ob = OrderBook(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         ts=datetime(2026, 5, 21, tzinfo=UTC),
         bids=(_level("100"), _level("99"), _level("98")),
         asks=(_level("101"), _level("102"), _level("103")),
@@ -87,7 +87,7 @@ def test_orderbook_empty_sides_allowed() -> None:
     """OrderBook with empty bids or asks is valid (before first fill)."""
     ob = OrderBook(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         ts=datetime(2026, 5, 21, tzinfo=UTC),
         bids=(),
         asks=(),
