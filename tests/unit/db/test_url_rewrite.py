@@ -1,7 +1,8 @@
 """Tests for shortfire.db.engine._rewrite_url — URL prefix rewriting to postgresql+asyncpg://."""
 
 import pytest
-from shortfire.db.engine import _rewrite_url
+
+from shortfire.db.engine import rewrite_url as _rewrite_url
 
 
 @pytest.mark.parametrize(

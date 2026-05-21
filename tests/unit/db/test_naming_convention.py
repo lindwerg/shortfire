@@ -1,9 +1,10 @@
 """Tests for shortfire.db.base — DeclarativeBase NAMING_CONVENTION (D-29)."""
 
 import sqlalchemy as sa
-from shortfire.db.base import NAMING_CONVENTION, Base
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.schema import CreateTable
+
+from shortfire.db.base import NAMING_CONVENTION, Base
 
 
 def test_naming_convention_keys() -> None:
