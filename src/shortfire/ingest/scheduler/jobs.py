@@ -404,18 +404,24 @@ async def mexc_candles_backfill_1d_job_callable() -> None:
 
 
 async def backup_pg_dump_job_callable() -> None:
-    """D-77 backup.pg_dump cron 01:00 UTC — placeholder, implementation in plan 01-10."""
-    log.info("scheduler.backup.placeholder", reason="implementation lands in plan 01-10")
+    """D-77 backup.pg_dump cron 01:00 UTC — daily pg_dump to Cloudflare R2 (plan 01-10)."""
+    from shortfire.ingest.backup.pg_dump_r2 import daily_pg_dump_to_r2
+
+    await daily_pg_dump_to_r2()
 
 
 async def freshness_check_job_callable() -> None:
-    """D-77 freshness.check every 1 min — placeholder, implementation in plan 01-10."""
-    log.info("scheduler.freshness.placeholder", reason="implementation lands in plan 01-10")
+    """D-77 freshness.check every 1 min — stale-data alerter (plan 01-10)."""
+    from shortfire.ingest.freshness.alerter import freshness_check_job
+
+    await freshness_check_job()
 
 
 async def dead_letter_alert_job_callable() -> None:
-    """D-77 dead_letter.alert every 5 min — placeholder, implementation in plan 01-10."""
-    log.info("scheduler.dead_letter_alert.placeholder", reason="implementation lands in plan 01-10")
+    """D-77 dead_letter.alert every 5 min — DLQ threshold alerter (plan 01-10)."""
+    from shortfire.ingest.dead_letter.alerter import dead_letter_alerter_job
+
+    await dead_letter_alerter_job()
 
 
 # ---------------------------------------------------------------------------
