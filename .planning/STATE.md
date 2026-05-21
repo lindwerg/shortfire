@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed Phase 01-04 (aux schema + continuous aggregates)
-last_updated: "2026-05-21T19:32:50.716Z"
+stopped_at: Completed 01-09-PLAN.md
+last_updated: "2026-05-21T20:05:00.675Z"
 last_activity: 2026-05-21
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 19
-  completed_plans: 16
+  completed_plans: 17
   percent: 17
 ---
 
@@ -27,11 +27,11 @@ See: .planning/ROADMAP.md (created 2026-05-21)
 ## Current Position
 
 Phase: 01 (data-platform) — EXECUTING
-Plan: 8 of 11
+Plan: 9 of 11
 Status: Ready to execute
 Last activity: 2026-05-21
 
-Progress: [████████░░] 84%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
@@ -68,6 +68,7 @@ Progress: [████████░░] 84%
 | Phase 00 P07 | 52 | 2 tasks | 10 files |
 | Phase 01 P04 | 180 | 2 tasks | 15 files |
 | Phase 01-data-platform P08 | 120min | 2 tasks | 17 files |
+| Phase 01 P09 | 25h | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,7 @@ Decisions are logged in PROJECT.md Key Decisions table. The roadmap codifies the
 - [Phase 01-data-platform]: D-49: mexc_ws_streams TaskGroup orchestrator with heartbeat watchdog 60s + cross-REST divergence 0.5%
 - [Phase 01-data-platform]: STOR-09: flag_gap uses Decimal(0) OHLCV sentinel rows with quality_flag=gap_detected
 - [Phase 01-data-platform]: Pitfall 27: zero bare asyncio.create_task — all ws tasks via TaskGroup.create_task
+- [Phase ?]: APScheduler 4.0.0a6 pinned exact alpha; D-78: ws streams are TaskGroup-owned; D-79: all job callables are top-level async functions
 
 ### Pending Todos
 
@@ -123,6 +125,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T19:32:50.708Z
-Stopped at: Completed Phase 01-04 (aux schema + continuous aggregates)
+Last session: 2026-05-21T20:05:00.667Z
+Stopped at: Completed 01-09-PLAN.md
 Resume file: None

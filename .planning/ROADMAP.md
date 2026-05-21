@@ -91,7 +91,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 01-09-PLAN.md — Universe snapshot job (UNIV-01..04: $500K filter, point-in-time, new-listing/delisting diff, tier-1 designation) + APScheduler 4 `AsyncScheduler` bootstrap + D-77 11-job graph under FastAPI lifespan + `kv_state.py` helper for round-robin cursors + UNIV-03 Hypothesis keystone + ORCH-01 lifespan smoke
+- [x] 01-09-PLAN.md — Universe snapshot job (UNIV-01..04: $500K filter, point-in-time, new-listing/delisting diff, tier-1 designation) + APScheduler 4 `AsyncScheduler` bootstrap + D-77 11-job graph under FastAPI lifespan + `kv_state.py` helper for round-robin cursors + UNIV-03 Hypothesis keystone + ORCH-01 lifespan smoke
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 8/11 | In Progress|  |
+| 1. Data Platform | 9/11 | In Progress|  |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |

@@ -49,14 +49,14 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Universe Filtering (UNIV)
 
 - [x] **UNIV-01**: Dynamic universe filter: any MEXC perp with 24h USD volume > $500K qualifies for inclusion
-- [ ] **UNIV-02**: Universe membership refreshes daily and writes into `universe_snapshots`
+- [x] **UNIV-02**: Universe membership refreshes daily and writes into `universe_snapshots`
 - [x] **UNIV-03**: Querying universe at historical timestamp T returns "listed AT T" (point-in-time), not "listed today"
-- [ ] **UNIV-04**: New listing detection within 24h of MEXC listing announcement
+- [x] **UNIV-04**: New listing detection within 24h of MEXC listing announcement
 
 ### Scheduling & Orchestration (ORCH)
 
-- [ ] **ORCH-01**: APScheduler 4.x runs in the `data-platform` service with Postgres jobstore for persistence
-- [ ] **ORCH-02**: Ingest cadence is scheduler-controlled per source (e.g. MEXC OHLCV: every minute; Coinglass funding: hourly; CoinGecko: daily)
+- [x] **ORCH-01**: APScheduler 4.x runs in the `data-platform` service with Postgres jobstore for persistence
+- [x] **ORCH-02**: Ingest cadence is scheduler-controlled per source (e.g. MEXC OHLCV: every minute; Coinglass funding: hourly; CoinGecko: daily)
 - [ ] **ORCH-03**: Data freshness gauge per source is exposed in Prometheus `/metrics`
 - [ ] **ORCH-04**: Stale-data Telegram alert fires when any source exceeds expected lag
 
@@ -296,11 +296,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STOR-09 | Phase 1 | Complete |
 | STOR-10 | Phase 1 | Pending |
 | UNIV-01 | Phase 1 | Complete |
-| UNIV-02 | Phase 1 | Pending |
+| UNIV-02 | Phase 1 | Complete |
 | UNIV-03 | Phase 1 | Complete |
-| UNIV-04 | Phase 1 | Pending |
-| ORCH-01 | Phase 1 | Pending |
-| ORCH-02 | Phase 1 | Pending |
+| UNIV-04 | Phase 1 | Complete |
+| ORCH-01 | Phase 1 | Complete |
+| ORCH-02 | Phase 1 | Complete |
 | ORCH-03 | Phase 1 | Pending |
 | ORCH-04 | Phase 1 | Pending |
 | FEAT-01 | Phase 2 | Pending |
