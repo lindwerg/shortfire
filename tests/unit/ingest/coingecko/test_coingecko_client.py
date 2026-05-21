@@ -16,9 +16,9 @@ import httpx
 import pytest
 import respx
 from pydantic import SecretStr
+
 from shortfire.ingest.coingecko.client import CoinGeckoClient
 from shortfire.ingest.coingecko.schemas import CoinsMarketsRow
-
 from shortfire.settings.data_platform import CoingeckoSettings, DataPlatformSettings
 
 
@@ -62,14 +62,17 @@ async def test_header_carries_demo_api_key_url_does_not() -> None:
         mock.get("/coins/markets").mock(return_value=httpx.Response(200, json=_CANNED_MARKETS_PAYLOAD))
         client = CoinGeckoClient(settings)
         await client.fetch_coins_markets(vs_currency="usd", per_page=250, page=1)
-        await client.close()
 
-    request = mock.calls[0].request
-    # Key in header (case-insensitive lookup via httpx)
-    assert request.headers.get("x-cg-demo-api-key") == token
-    # Key NOT in URL query
-    assert token not in str(request.url.query)
-    assert "x-cg-demo-api-key" not in str(request.url.query).lower()
+        # Access calls INSIDE the with block (respx clears calls on __exit__)
+        assert len(mock.calls) == 1
+        request = mock.calls[0].request
+        # Key in header (case-insensitive lookup via httpx)
+        assert request.headers.get("x-cg-demo-api-key") == token
+        # Key NOT in URL query
+        assert token not in str(request.url.query)
+        assert "x-cg-demo-api-key" not in str(request.url.query).lower()
+
+        await client.close()
 
 
 @pytest.mark.asyncio
@@ -81,13 +84,16 @@ async def test_fetch_coins_markets_paginates_per_page_250() -> None:
         mock.get("/coins/markets").mock(return_value=httpx.Response(200, json=_CANNED_MARKETS_PAYLOAD))
         client = CoinGeckoClient(settings)
         result = await client.fetch_coins_markets(vs_currency="usd", per_page=250, page=1)
-        await client.close()
 
-    request = mock.calls[0].request
-    query_str = str(request.url.query)
-    assert "per_page=250" in query_str
-    assert "page=1" in query_str
-    assert "order=market_cap_desc" in query_str
+        # Access calls INSIDE the with block
+        assert len(mock.calls) == 1
+        request = mock.calls[0].request
+        query_str = str(request.url.query)
+        assert "per_page=250" in query_str
+        assert "page=1" in query_str
+        assert "order=market_cap_desc" in query_str
+
+        await client.close()
 
     assert result is not None
     assert len(result) == 2
@@ -108,10 +114,13 @@ async def test_401_routes_to_dead_letter_no_raise() -> None:
         result = await client.fetch_coins_markets()
         await client.close()
 
+        # Verify inside with block
+        assert len(mock.calls) == 1
+
     assert result is None
     mock_dl.assert_called_once()
     call_kwargs = mock_dl.call_args
-    # error_type should be HTTPStatusError
+    # error_type should be HTTPStatusError (positional arg at index 4)
     assert call_kwargs[0][4] == "HTTPStatusError" or (call_kwargs[1].get("error_type") == "HTTPStatusError")
 
 
@@ -124,8 +133,9 @@ async def test_429_raises_for_retry() -> None:
         mock.get("/coins/markets").mock(return_value=httpx.Response(429, text="Too Many Requests"))
         client = CoinGeckoClient(settings)
         with pytest.raises(httpx.HTTPStatusError):
-            # Call the internal _call directly to bypass tenacity retry decorator
-            await client._call(
+            # Access the internal _call directly to bypass tenacity retry decorator
+            # pyright: ignore[reportPrivateUsage] — intentional for unit test isolation
+            await client._call(  # type: ignore[misc]
                 "/coins/markets",
                 params={"vs_currency": "usd", "per_page": 1, "page": 1, "order": "market_cap_desc"},
             )
@@ -136,7 +146,7 @@ async def test_429_raises_for_retry() -> None:
 async def test_validation_error_routes_to_dead_letter() -> None:
     """Pydantic ValidationError on malformed payload routes to dead_letter, returns None."""
     settings = _build_settings()
-    # current_price="not_a_decimal" should fail Pydantic strict Decimal validation
+    # current_price="not_a_decimal" will fail Decimal(str("not_a_decimal")) in from_raw
     malformed = [{"id": "bitcoin", "symbol": "btc", "name": "Bitcoin", "current_price": "not_a_decimal"}]
 
     with (
@@ -149,7 +159,6 @@ async def test_validation_error_routes_to_dead_letter() -> None:
         await client.close()
 
     # Either the whole list fails schema or per-row parsing fails
-    # In both cases dead_letter must be called and result is None
     assert result is None or (result is not None and len(result) == 0)
     # dead_letter was called at least once
     assert mock_dl.call_count >= 1
@@ -174,6 +183,9 @@ async def test_fetch_coin_detail_returns_coin_detail_response() -> None:
         mock.get("/coins/bitcoin").mock(return_value=httpx.Response(200, json=canned_detail))
         client = CoinGeckoClient(settings)
         result = await client.fetch_coin_detail(coin_id="bitcoin")
+
+        # Access inside the with block
+        assert len(mock.calls) == 1
         await client.close()
 
     assert result is not None
