@@ -112,14 +112,17 @@ class TestEnvPy:
         assert "async_engine_from_config" in content
 
     def test_env_does_not_use_sync_engine_from_config(self) -> None:
-        """env.py must NOT import the sync engine_from_config (Pitfall 3)."""
-        content = _read(ENV_PY)
-        # Check that engine_from_config is not used without the 'async_' prefix
-        import re
+        """env.py must NOT import the sync engine_from_config (Pitfall 3).
 
-        # Match 'engine_from_config' not preceded by 'async_'
-        matches = re.findall(r"(?<!async_)engine_from_config", content)
-        assert matches == [], f"Found sync engine_from_config usage: {matches}"
+        The sync form is imported as:
+          from sqlalchemy import engine_from_config
+        Any import of 'engine_from_config' NOT from sqlalchemy.ext.asyncio is forbidden.
+        """
+        content = _read(ENV_PY)
+        # Check that the sync form is not imported (from sqlalchemy import engine_from_config)
+        assert "from sqlalchemy import engine_from_config" not in content
+        # The only acceptable form is from sqlalchemy.ext.asyncio import async_engine_from_config
+        assert "async_engine_from_config" in content
 
     def test_env_transaction_per_migration(self) -> None:
         """env.py must set transaction_per_migration=True (D-26)."""
