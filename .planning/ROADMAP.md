@@ -87,7 +87,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-08-PLAN.md — MEXC live ws ingest (MinuteAggregator from `watch_trades` per D-43; `watch_ohlcv` banned; `watch_funding_rate` dual-timestamp; OI REST round-robin; L2 sampler tier-1/tier-2 cadences; trades 1-min batched COPY; liquidations ws-only per W3 demotion of D-48 with explicit decision log) under `asyncio.TaskGroup` (Pitfall 27) + active heartbeat watchdog + cross-REST divergence check writing `quality_flag='ws_rest_divergence'` (D-49 points 3+4) + gap-injection helper (STOR-09)
+- [x] 01-08-PLAN.md — MEXC live ws ingest (MinuteAggregator from `watch_trades` per D-43; `watch_ohlcv` banned; `watch_funding_rate` dual-timestamp; OI REST round-robin; L2 sampler tier-1/tier-2 cadences; trades 1-min batched COPY; liquidations ws-only per W3 demotion of D-48 with explicit decision log) under `asyncio.TaskGroup` (Pitfall 27) + active heartbeat watchdog + cross-REST divergence check writing `quality_flag='ws_rest_divergence'` (D-49 points 3+4) + gap-injection helper (STOR-09)
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 7/11 | In Progress|  |
+| 1. Data Platform | 8/11 | In Progress|  |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-05-21T19:02:25.000Z"
-last_activity: 2026-05-22 -- Wave 3 complete (01-05/06/07 merged)
+stopped_at: Completed Phase 01-04 (aux schema + continuous aggregates)
+last_updated: "2026-05-21T19:32:50.716Z"
+last_activity: 2026-05-21
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 19
-  completed_plans: 12
+  completed_plans: 16
   percent: 17
 ---
 
@@ -27,11 +27,11 @@ See: .planning/ROADMAP.md (created 2026-05-21)
 ## Current Position
 
 Phase: 01 (data-platform) — EXECUTING
-Plan: 7 of 11
+Plan: 8 of 11
 Status: Ready to execute
 Last activity: 2026-05-21
 
-Progress: [██████░░░░] 63%
+Progress: [████████░░] 84%
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Progress: [██████░░░░] 63%
 | Phase 00 P07 | 5 | 1 tasks | 5 files |
 | Phase 00 P07 | 52 | 2 tasks | 10 files |
 | Phase 01 P04 | 180 | 2 tasks | 15 files |
+| Phase 01-data-platform P08 | 120min | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,11 @@ Decisions are logged in PROJECT.md Key Decisions table. The roadmap codifies the
 - [01-04]: Composite PK (id, ts) required on dead_letter and ingest_runs — TimescaleDB requires partition column (ts) in hypertable PK
 - [01-04]: symbols is relational (no create_hypertable), universe_snapshots partitions on DATE not TIMESTAMPTZ — D-63/D-64 locked
 - [01-04]: dead_letter.raw_payload is TEXT not JSONB — malformed JSON payloads must be storable; JSONB would reject them silently
+- [Phase 01-data-platform]: D-43: watch_ohlcv BANNED (ccxt#27253) — client-side MinuteAggregator from watch_trades
+- [Phase 01-data-platform]: D-48-REVISION: Phase 1 ships ws-only liquidations; degraded path uses hasattr guard + freshness gauge sentinel 0
+- [Phase 01-data-platform]: D-49: mexc_ws_streams TaskGroup orchestrator with heartbeat watchdog 60s + cross-REST divergence 0.5%
+- [Phase 01-data-platform]: STOR-09: flag_gap uses Decimal(0) OHLCV sentinel rows with quality_flag=gap_detected
+- [Phase 01-data-platform]: Pitfall 27: zero bare asyncio.create_task — all ws tasks via TaskGroup.create_task
 
 ### Pending Todos
 
@@ -117,6 +123,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T15:48:58.640Z
+Last session: 2026-05-21T19:32:50.708Z
 Stopped at: Completed Phase 01-04 (aux schema + continuous aggregates)
-Resume file: .planning/phases/01-data-platform/01-05-PLAN.md
+Resume file: None

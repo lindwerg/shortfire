@@ -20,15 +20,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Data Platform — Ingest (DATA)
 
-- [ ] **DATA-01**: MEXC USDT-perp OHLCV candles (1m, 5m, 15m, 1h, 4h, 1d) ingest via ccxt for entire qualifying universe
-- [ ] **DATA-02**: MEXC funding rate history (per-symbol, both `settlement_ts` and `published_ts` timestamps) ingest
-- [ ] **DATA-03**: MEXC open interest history (per-symbol, hourly granularity) ingest
-- [ ] **DATA-04**: MEXC signed trades (recent N or websocket stream with persistence) ingest
-- [ ] **DATA-05**: MEXC L2 order book top-20 snapshots sampled every 5–10s per qualifying symbol
-- [ ] **DATA-06**: MEXC liquidation events ingest (via websocket or REST polling)
+- [x] **DATA-01**: MEXC USDT-perp OHLCV candles (1m, 5m, 15m, 1h, 4h, 1d) ingest via ccxt for entire qualifying universe
+- [x] **DATA-02**: MEXC funding rate history (per-symbol, both `settlement_ts` and `published_ts` timestamps) ingest
+- [x] **DATA-03**: MEXC open interest history (per-symbol, hourly granularity) ingest
+- [x] **DATA-04**: MEXC signed trades (recent N or websocket stream with persistence) ingest
+- [x] **DATA-05**: MEXC L2 order book top-20 snapshots sampled every 5–10s per qualifying symbol
+- [x] **DATA-06**: MEXC liquidation events ingest (via websocket or REST polling)
 - [x] **DATA-07**: Coinglass funding-aggregate, OI-aggregate, long/short ratio, liquidation data ingest (within Startup tier $79/mo limits)
 - [x] **DATA-08**: CoinGecko daily market metadata (price, volume, market cap, category, listing date) ingest
-- [ ] **DATA-09**: All ingest pipelines are idempotent on `(symbol, ts, source)` — re-ingest yields no duplicates or schema drift
+- [x] **DATA-09**: All ingest pipelines are idempotent on `(symbol, ts, source)` — re-ingest yields no duplicates or schema drift
 - [ ] **DATA-10**: Ingest uses tenacity retries with exponential backoff and aiolimiter rate limits per API provider
 - [x] **DATA-11**: Pydantic schema validation runs on every API response; validation failures land in a `dead_letter` table for inspection
 - [x] **DATA-12**: Each derivatives row carries an explicit `source` column (e.g. `mexc_native`, `coinglass_aggregate`) — MEXC-native and Coinglass-aggregate are NEVER conflated
@@ -43,7 +43,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **STOR-06**: Daily `universe_snapshots` hypertable captures full set of MEXC perp symbols listed AT each historical date (anti-survivorship)
 - [x] **STOR-07**: Symbol lifecycle handled via soft delete (`delisted_at` column); `ON DELETE CASCADE` is banned
 - [ ] **STOR-08**: Backfill of 1–2 years of historical data completes successfully for OHLCV + funding (Coinglass Startup tier limits accepted for 1m derivatives — defer Standard tier decision to Phase 2)
-- [ ] **STOR-09**: Backfill gaps are flagged with a `quality_flag` column rather than silently interpolated
+- [x] **STOR-09**: Backfill gaps are flagged with a `quality_flag` column rather than silently interpolated
 - [ ] **STOR-10**: Daily `pg_dump` to external storage (R2/B2) runs and is verifiable
 
 ### Universe Filtering (UNIV)
@@ -273,15 +273,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-06 | Phase 0 | Complete |
 | FOUND-07 | Phase 0 | Complete |
 | FOUND-08 | Phase 0 | Complete |
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
-| DATA-03 | Phase 1 | Pending |
-| DATA-04 | Phase 1 | Pending |
-| DATA-05 | Phase 1 | Pending |
-| DATA-06 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Complete |
+| DATA-02 | Phase 1 | Complete |
+| DATA-03 | Phase 1 | Complete |
+| DATA-04 | Phase 1 | Complete |
+| DATA-05 | Phase 1 | Complete |
+| DATA-06 | Phase 1 | Complete |
 | DATA-07 | Phase 1 | Complete |
 | DATA-08 | Phase 1 | Complete |
-| DATA-09 | Phase 1 | Pending |
+| DATA-09 | Phase 1 | Complete |
 | DATA-10 | Phase 1 | Pending |
 | DATA-11 | Phase 1 | Complete |
 | DATA-12 | Phase 1 | Complete |
@@ -293,7 +293,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STOR-06 | Phase 1 | Complete |
 | STOR-07 | Phase 1 | Complete |
 | STOR-08 | Phase 1 | Pending |
-| STOR-09 | Phase 1 | Pending |
+| STOR-09 | Phase 1 | Complete |
 | STOR-10 | Phase 1 | Pending |
 | UNIV-01 | Phase 1 | Complete |
 | UNIV-02 | Phase 1 | Pending |
