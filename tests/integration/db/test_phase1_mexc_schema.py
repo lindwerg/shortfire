@@ -11,6 +11,8 @@ VALIDATION.md Wave-0 keystone: test_migrations_through_0008_apply,
 test_compression_policy_attached_per_table, test_chunk_intervals_match_locked_values.
 """
 
+from datetime import timedelta
+
 import asyncpg
 import pytest
 
@@ -42,17 +44,16 @@ _MEXC_HYPERTABLES = [
     "raw_mexc_liquidations",
 ]
 
-# Chunk intervals locked per D-58 inventory (in microseconds)
-# 1 day = 86400 * 1_000_000 µs; 7 days = 7 * 86400 * 1_000_000 µs, etc.
-_MICROSECONDS_PER_DAY = 86_400 * 1_000_000
-_EXPECTED_CHUNK_MICROSECONDS: dict[str, int] = {
-    "raw_mexc_candles_1m": 1 * _MICROSECONDS_PER_DAY,  # 1 day
-    "raw_mexc_candles_1d": 90 * _MICROSECONDS_PER_DAY,  # 90 days
-    "raw_mexc_funding": 30 * _MICROSECONDS_PER_DAY,  # 30 days
-    "raw_mexc_oi": 7 * _MICROSECONDS_PER_DAY,  # 7 days
-    "raw_mexc_trades": 1 * _MICROSECONDS_PER_DAY,  # 1 day
-    "raw_mexc_l2_top20": 1 * _MICROSECONDS_PER_DAY,  # 1 day
-    "raw_mexc_liquidations": 7 * _MICROSECONDS_PER_DAY,  # 7 days
+# Chunk intervals locked per D-58 inventory.
+# timescaledb_information.dimensions.time_interval returns a Python timedelta (Timescale 2.18).
+_EXPECTED_CHUNK_INTERVALS: dict[str, timedelta] = {
+    "raw_mexc_candles_1m": timedelta(days=1),
+    "raw_mexc_candles_1d": timedelta(days=90),
+    "raw_mexc_funding": timedelta(days=30),
+    "raw_mexc_oi": timedelta(days=7),
+    "raw_mexc_trades": timedelta(days=1),
+    "raw_mexc_l2_top20": timedelta(days=1),
+    "raw_mexc_liquidations": timedelta(days=7),
 }
 
 
@@ -157,21 +158,22 @@ async def test_compression_policy_attached_per_table(migrated_db: str, table: st
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.parametrize("table,expected_us", list(_EXPECTED_CHUNK_MICROSECONDS.items()))
-async def test_chunk_intervals_match_locked_values(migrated_db: str, table: str, expected_us: int) -> None:
+@pytest.mark.parametrize("table,expected_td", list(_EXPECTED_CHUNK_INTERVALS.items()))
+async def test_chunk_intervals_match_locked_values(
+    migrated_db: str, table: str, expected_td: timedelta
+) -> None:
     """Assert each hypertable's chunk interval matches the D-58 table inventory.
 
     Queries timescaledb_information.dimensions for the time dimension interval.
-    The view exposes interval_length (an INTEGER) in microseconds for Timescale 2.18.
-
-    Note: timescaledb_information.dimensions uses 'interval_length' (microseconds) in
-    Timescale 2.x, NOT 'chunk_time_interval_microseconds'.
+    In Timescale 2.18 the 'time_interval' column returns a Python timedelta
+    (PostgreSQL INTERVAL type); 'interval_length' (microseconds INTEGER) does NOT
+    exist in this version.
     """
     asyncpg_url = _to_asyncpg_url(migrated_db)
     conn: asyncpg.Connection[asyncpg.Record] = await asyncpg.connect(asyncpg_url)  # type: ignore[type-arg]
     try:
         rows: list[asyncpg.Record] = await conn.fetch(  # type: ignore[attr-defined]
-            "SELECT interval_length "
+            "SELECT time_interval "
             "FROM timescaledb_information.dimensions "
             "WHERE hypertable_name = $1 "
             "  AND dimension_type = 'Time'",
@@ -183,9 +185,8 @@ async def test_chunk_intervals_match_locked_values(migrated_db: str, table: str,
     assert len(rows) >= 1, (
         f"No time dimension found for hypertable '{table}' in timescaledb_information.dimensions."
     )
-    actual_us = rows[0]["interval_length"]  # type: ignore[index]
-    assert actual_us == expected_us, (
-        f"Chunk interval for '{table}': expected {expected_us} µs "
-        f"({expected_us // _MICROSECONDS_PER_DAY} days), got {actual_us} µs "
-        f"({actual_us // _MICROSECONDS_PER_DAY} days). Check D-58 table inventory."
+    actual_td: timedelta = rows[0]["time_interval"]  # type: ignore[index]
+    assert actual_td == expected_td, (
+        f"Chunk interval for '{table}': expected {expected_td}, got {actual_td}. "
+        "Check D-58 table inventory and create_hypertable() call in the migration."
     )
