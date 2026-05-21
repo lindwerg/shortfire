@@ -25,7 +25,7 @@ def test_funding_published_gt_settlement_raises() -> None:
     with pytest.raises(ValidationError, match=r"published_ts.*<=.*settlement_ts|published"):
         Funding(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             published_ts=later,  # published AFTER settlement — wrong
             settlement_ts=now,
             rate=Decimal("0.0001"),
@@ -38,7 +38,7 @@ def test_funding_naive_published_ts_raises() -> None:
     with pytest.raises(ValidationError, match=r"timezone-aware|tzinfo"):
         Funding(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             published_ts=datetime(2026, 5, 21, 12, 0, 0),  # naive
             settlement_ts=now,
             rate=Decimal("0.0001"),
@@ -51,7 +51,7 @@ def test_funding_naive_settlement_ts_raises() -> None:
     with pytest.raises(ValidationError, match=r"timezone-aware|tzinfo"):
         Funding(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             published_ts=now,
             settlement_ts=datetime(2026, 5, 21, 20, 0, 0),  # naive
             rate=Decimal("0.0001"),
@@ -64,7 +64,7 @@ def test_funding_happy_path() -> None:
     settlement = now + timedelta(hours=8)
     f = Funding(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         published_ts=now,
         settlement_ts=settlement,
         rate=Decimal("0.0001"),
@@ -79,7 +79,7 @@ def test_funding_negative_rate_allowed() -> None:
     settlement = now + timedelta(hours=8)
     f = Funding(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         published_ts=now,
         settlement_ts=settlement,
         rate=Decimal("-0.0003"),
@@ -92,7 +92,7 @@ def test_funding_equal_timestamps_allowed() -> None:
     now = datetime(2026, 5, 21, 12, 0, 0, tzinfo=UTC)
     f = Funding(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         published_ts=now,
         settlement_ts=now,
         rate=Decimal("0.0001"),
@@ -106,7 +106,7 @@ def test_funding_optional_next_funding_ts() -> None:
     settlement = now + timedelta(hours=8)
     f = Funding(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         published_ts=now,
         settlement_ts=settlement,
         rate=Decimal("0.0001"),
@@ -128,7 +128,7 @@ def test_funding_round_trip_hypothesis(ts: datetime) -> None:
         settlement = ts  # equal timestamps are valid
     f = Funding(
         symbol="ETHUSDT",
-        source="coinglass",
+        source="coinglass_aggregate",
         published_ts=ts,
         settlement_ts=settlement,
         rate=Decimal("-0.0001"),

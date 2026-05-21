@@ -1,4 +1,4 @@
-"""Phase 0 event taxonomy registry — UI-SPEC §Event Taxonomy.
+"""Event taxonomy registry — UI-SPEC §Event Taxonomy.
 
 Adding a new event in Phase 1+ requires editing this file AND getting reviewed.
 This is the single source of truth that prevents Sprache drift across services.
@@ -15,6 +15,7 @@ Usage:
 
 EVENTS: frozenset[str] = frozenset(
     {
+        # --- Phase 0 (12 events) ---
         "service.startup",
         "service.settings.loaded",
         "service.settings.failed",
@@ -27,12 +28,36 @@ EVENTS: frozenset[str] = frozenset(
         "request.failed",
         "service_event.emitted",
         "secret.guard.tripped",
+        # --- Phase 1 — ingest pipeline (5 events) — D-85 ---
+        "ingest.started",
+        "ingest.completed",
+        "ingest.failed",
+        "ingest.rate_limited",
+        "ingest.dead_letter",
+        # --- Phase 1 — universe tracking (3 events) — D-85 ---
+        "universe.snapshot.created",
+        "universe.symbol.new",
+        "universe.symbol.delisted",
+        # --- Phase 1 — freshness monitor (2 events) — D-85 ---
+        "freshness.degraded",
+        "freshness.recovered",
+        # --- Phase 1 — backup lifecycle (3 events) — D-85 ---
+        "backup.started",
+        "backup.completed",
+        "backup.failed",
+        # --- Phase 1 — websocket lifecycle (4 events) — D-85 ---
+        "ws.connected",
+        "ws.disconnected",
+        "ws.reconnect",
+        "ws.stale",
     }
 )
-"""Frozenset of 12 registered event names for Phase 0.
+"""Frozenset of 29 registered event names (12 Phase 0 + 17 Phase 1).
 
 Each entry corresponds to a row in UI-SPEC §Event Taxonomy table.
-Phase 1+ extends this set by adding new entries — never by removing existing ones
+Phase 1 adds 17 new event names per D-85 covering the ingest, universe,
+freshness, backup, and WebSocket lifecycle event families.
+Phase 2+ extends this set by adding new entries — never by removing existing ones
 (backward compatibility with Loki queries and Grafana alert expressions).
 """
 

@@ -98,6 +98,69 @@ def add_compression_policy(
     )
 
 
+def create_continuous_aggregate(
+    view_name: str,
+    source_table: str,
+    bucket: str,
+    select_columns: str,
+    group_by: str | None = None,
+    start_offset: str = "2 hours",
+    end_offset: str = "5 minutes",
+    schedule_interval: str = "5 minutes",
+) -> None:
+    """Create a TimescaleDB continuous aggregate + refresh policy (D-95 carve-out, D-27).
+
+    D-27 discipline: TimescaleDB DDL goes through helpers. Continuous aggregates have no
+    Alembic helper equivalent, so this helper is the ONE place where raw `op.execute` for
+    CA DDL is permitted — the carve-out is justified by D-95 + RESEARCH.md §3.5.
+    Migration 0014 calls this helper four times; no raw `op.execute` appears in that file.
+
+    SECURITY (T-00-03): Arguments must be hardcoded constants from migration files only.
+    NEVER call from request-handling code or with user-controlled input.
+
+    T-1-CA-02: All start_offset values used in production are < 7 days (the compression-after
+    window on raw_mexc_candles_1m), so refresh never touches compressed chunks.
+
+    Args:
+        view_name: Name of the continuous aggregate view to create.
+        source_table: Source hypertable to aggregate from.
+        bucket: Time bucket width (e.g. '5 minutes', '1 hour', '4 hours').
+        select_columns: Full SELECT clause (symbol, time_bucket(…) AS ts, agg_columns…).
+        group_by: GROUP BY clause. Defaults to "symbol, time_bucket('<bucket>', ts)".
+        start_offset: CA refresh policy start_offset INTERVAL (D-67 locked values).
+        end_offset: CA refresh policy end_offset INTERVAL (D-67 locked values).
+        schedule_interval: CA refresh policy schedule_interval INTERVAL (D-67 locked values).
+    """
+    if group_by is None:
+        group_by = f"symbol, time_bucket('{bucket}', ts)"
+
+    # Two separate op.execute calls:
+    # 1. CREATE MATERIALIZED VIEW ... WITH NO DATA runs inside the migration transaction.
+    #    WITH NO DATA avoids immediate materialization which would fail inside a transaction.
+    #    TimescaleDB supports WITH NO DATA for continuous aggregates since 2.x.
+    # 2. add_continuous_aggregate_policy is a plain SELECT that runs fine in a transaction.
+    op.execute(
+        text(f"""
+        CREATE MATERIALIZED VIEW {view_name}
+        WITH (timescaledb.continuous) AS
+        SELECT {select_columns}
+        FROM {source_table}
+        GROUP BY {group_by}
+        WITH NO DATA
+    """)
+    )
+    op.execute(
+        text(f"""
+        SELECT add_continuous_aggregate_policy(
+            '{view_name}',
+            start_offset   => INTERVAL '{start_offset}',
+            end_offset     => INTERVAL '{end_offset}',
+            schedule_interval => INTERVAL '{schedule_interval}'
+        )
+    """)
+    )
+
+
 def add_retention_policy(
     table: str,
     drop_after: str,

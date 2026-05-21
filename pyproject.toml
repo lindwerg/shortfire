@@ -17,9 +17,10 @@ dependencies = [
     "orjson>=3.11",
     "tenacity>=9.1",
     "aiolimiter>=1.2",
-    "httpx>=0.28",
+    "httpx[http2]>=0.28",
     "python-dotenv>=1.2",
     "greenlet>=3.5.1",
+    "ccxt>=4.5.54,<4.6",
 ]
 
 [dependency-groups]
@@ -95,6 +96,5 @@ branch = true
 omit = [
     "src/shortfire/risk/*",
     "src/shortfire/execution/*",
-    "src/shortfire/ingest/*",
     "src/shortfire/strategy/*",
 ]

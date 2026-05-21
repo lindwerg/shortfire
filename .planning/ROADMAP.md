@@ -67,7 +67,39 @@ Plans:
   4. The three Railway services (`data-platform`, `strategy-engine` placeholder, `dashboard` placeholder) are live; every push to `main` auto-deploys; `data-platform` exposes per-source freshness gauges on `/metrics`, and Telegram fires a stale-data alert when any source exceeds its expected lag.
   5. Daily `pg_dump` to off-Railway storage (R2/B2) runs and a documented restore drill recreates the database; continuous aggregates exist for 5m/15m/1h/4h rollups; all timestamps are `TIMESTAMPTZ` and `ON DELETE CASCADE` is banned project-wide.
 
-**Plans**: TBD
+**Plans**: 11 plans
+Plans:
+**Wave 1**
+
+- [x] 01-01-PLAN.md — Domain `Source` literal widening (D-59) + ingest infrastructure (retry, rate-limit, copy_into_hypertable, dead_letter writer, context) + coverage gate removal of `src/shortfire/ingest/*` omit
+- [x] 01-02-PLAN.md — Observability extensions (17 events, 8 metric families on existing REGISTRY, raw-httpx Telegram) + settings extensions (TelegramSettings + R2BackupSettings on DataPlatformSettings)
+- [x] 01-03-PLAN.md — Alembic migrations 0003–0008 (7 MEXC-native hypertables: candles 1m+1d, funding, oi, trades, l2_top20, liquidations) + integration tests (schema/hypertable existence, source CHECK rejection, DATA-09 Hypothesis idempotency keystone)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 01-04-PLAN.md — Alembic migrations 0009–0014 (Coinglass×4 + CoinGecko + universe_snapshots + symbols relational + dead_letter + ingest_runs + continuous aggregates 5m/15m/1h/4h) + `create_continuous_aggregate` helper + 3 ORM models + STOR-05 CA-parity integration keystone
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 01-05-PLAN.md — Concrete `MexcClient` (ccxt 4.5 swap, pin `>=4.5.54,<4.6`) + 4 Pydantic v2 strict schemas with `to_domain()` + paginated REST OHLCV/funding backfill (`asyncio.Semaphore(8)`) + `FakeMexcClient.with_synthetic_candles` classmethod constructor + DATA-01 integration keystone
+- [ ] 01-06-PLAN.md — Concrete `CoinglassClient` (httpx HTTP/2, `aiolimiter(28/60)` per Hobbyist) + 4 endpoint Pydantic schemas + 4 per-endpoint fetcher modules with `source='coinglass_aggregate'` + DATA-07 integration keystone
+- [ ] 01-07-PLAN.md — Concrete `CoinGeckoClient` (httpx, Demo-tier `x-cg-demo-api-key` header) + 2 Pydantic schemas + daily universe-metadata fetcher writing to `raw_coingecko_market` + DATA-08 integration keystone
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 01-08-PLAN.md — MEXC live ws ingest (MinuteAggregator from `watch_trades` per D-43; `watch_ohlcv` banned; `watch_funding_rate` dual-timestamp; OI REST round-robin; L2 sampler tier-1/tier-2 cadences; trades 1-min batched COPY; liquidations ws-only per W3 demotion of D-48 with explicit decision log) under `asyncio.TaskGroup` (Pitfall 27) + active heartbeat watchdog + cross-REST divergence check writing `quality_flag='ws_rest_divergence'` (D-49 points 3+4) + gap-injection helper (STOR-09)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 01-09-PLAN.md — Universe snapshot job (UNIV-01..04: $500K filter, point-in-time, new-listing/delisting diff, tier-1 designation) + APScheduler 4 `AsyncScheduler` bootstrap + D-77 11-job graph under FastAPI lifespan + `kv_state.py` helper for round-robin cursors + UNIV-03 Hypothesis keystone + ORCH-01 lifespan smoke
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [ ] 01-10-PLAN.md — Freshness gauges + stale-data Telegram alerter (D-87 severity routing) + dead_letter threshold alerter + R2 daily pg_dump backup (`--format=custom --compress=zstd:9`, `PGPASSWORD` env DSN, full D-81 retention roll-up: 7d+4w+6m+annual via S3 copy_object) + Dockerfile `postgresql-client-16` + `docs/RESTORE.md` + ORCH-04 + STOR-10 keystones
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
+- [ ] 01-11-PLAN.md — ROADMAP/REQUIREMENTS Coinglass-tier patch (Hobbyist ~$35/mo per D-35) + `.env.example` Phase 1 secret block + STOR-08 6-day CI sanity slice + `docs/BACKFILL.md` + `docs/PHASE-1-SMOKE.md` + Railway 3-service deploy smoke + W5 mandatory ≥1yr backfill execution gate (operator pastes row-count tables into 01-11-SUMMARY.md before checkpoint approval)
 
 ### Phase 2: Strategy Research + ML Methodology
 
@@ -140,7 +172,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Foundation | 8/8 | Complete   | 2026-05-21 |
-| 1. Data Platform | 0/TBD | Not started | - |
+| 1. Data Platform | 4/11 | In Progress|  |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |
 | 4. Paper Trading (HARD GATE) | 0/TBD | Not started | - |

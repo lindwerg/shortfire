@@ -19,7 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 # ---------------------------------------------------------------------------
 
 Timeframe = Literal["1m", "5m", "15m", "1h", "4h", "1d"]
-Source = Literal["mexc", "coinglass", "coingecko"]
+Source = Literal["mexc_native", "coinglass_aggregate", "coinglass_mexc_only", "coingecko"]
 LiquidationSide = Literal["short", "long"]
 
 

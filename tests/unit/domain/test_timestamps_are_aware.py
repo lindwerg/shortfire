@@ -22,7 +22,7 @@ from shortfire.domain.trading import Order, Position, Signal
 def _naive_candle() -> dict[str, Any]:
     return {
         "symbol": "BTCUSDT",
-        "source": "mexc",
+        "source": "mexc_native",
         "timeframe": "1m",
         "ts": datetime(2026, 5, 21),  # naive
         "open": Decimal("100"),
@@ -36,7 +36,7 @@ def _naive_candle() -> dict[str, Any]:
 def _naive_orderbook() -> dict[str, Any]:
     return {
         "symbol": "BTCUSDT",
-        "source": "mexc",
+        "source": "mexc_native",
         "ts": datetime(2026, 5, 21),  # naive
         "bids": (OrderBookLevel(price=Decimal("100"), qty=Decimal("1")),),
         "asks": (OrderBookLevel(price=Decimal("101"), qty=Decimal("1")),),
@@ -47,7 +47,7 @@ def _naive_funding() -> dict[str, Any]:
     now_naive = datetime(2026, 5, 21, 12, 0, 0)  # naive published_ts
     return {
         "symbol": "BTCUSDT",
-        "source": "mexc",
+        "source": "mexc_native",
         "published_ts": now_naive,
         "settlement_ts": datetime(2026, 5, 21, 20, 0, 0, tzinfo=UTC),
         "rate": Decimal("0.0001"),
@@ -57,7 +57,7 @@ def _naive_funding() -> dict[str, Any]:
 def _naive_liquidation() -> dict[str, Any]:
     return {
         "symbol": "BTCUSDT",
-        "source": "mexc",
+        "source": "mexc_native",
         "ts": datetime(2026, 5, 21),  # naive
         "side": "short",
         "qty": Decimal("0.5"),

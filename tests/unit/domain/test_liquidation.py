@@ -23,7 +23,7 @@ def test_liquidation_happy_path() -> None:
     """Liquidation with valid data constructs successfully."""
     liq = Liquidation(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         ts=datetime(2026, 5, 21, tzinfo=UTC),
         side="short",
         qty=Decimal("0.5"),
@@ -40,7 +40,7 @@ def test_liquidation_naive_datetime_raises() -> None:
     with pytest.raises(ValidationError, match=r"timezone-aware|tzinfo"):
         Liquidation(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             ts=datetime(2026, 5, 21),  # naive
             side="long",
             qty=Decimal("0.5"),
@@ -53,7 +53,7 @@ def test_liquidation_zero_qty_raises() -> None:
     with pytest.raises(ValidationError):
         Liquidation(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             ts=datetime(2026, 5, 21, tzinfo=UTC),
             side="short",
             qty=Decimal("0"),  # not positive
@@ -66,7 +66,7 @@ def test_liquidation_zero_price_raises() -> None:
     with pytest.raises(ValidationError):
         Liquidation(
             symbol="BTCUSDT",
-            source="mexc",
+            source="mexc_native",
             ts=datetime(2026, 5, 21, tzinfo=UTC),
             side="short",
             qty=Decimal("0.5"),
@@ -75,12 +75,12 @@ def test_liquidation_zero_price_raises() -> None:
 
 
 def test_liquidation_both_sides() -> None:
-    """Liquidation accepts both short and long sides."""
+    """Liquidation accepts both short and long sides from coinglass_aggregate source."""
     ts = datetime(2026, 5, 21, tzinfo=UTC)
     for side in ("short", "long"):
         liq = Liquidation(
             symbol="ETHUSDT",
-            source="coinglass",
+            source="coinglass_aggregate",
             ts=ts,
             side=side,  # type: ignore[arg-type]
             qty=Decimal("1"),
@@ -95,7 +95,7 @@ def test_liquidation_round_trip(qty: Decimal, price: Decimal, ts: datetime) -> N
     """Round-trip model_dump / model_validate preserves all fields."""
     liq = Liquidation(
         symbol="BTCUSDT",
-        source="mexc",
+        source="mexc_native",
         ts=ts,
         side="short",
         qty=qty,
