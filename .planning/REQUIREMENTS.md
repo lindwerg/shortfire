@@ -11,7 +11,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **FOUND-01**: Repository scaffold with uv + ruff + pyright + pytest + Hypothesis is set up and CI runs on every push
 - [ ] **FOUND-02**: Railway project with PostgreSQL 16 + TimescaleDB 2.18 extension is provisioned and connected from GitHub
-- [ ] **FOUND-03**: Alembic migrations with TimescaleDB-aware DDL (`create_hypertable`, compression policies) are wired and tested
+- [x] **FOUND-03**: Alembic migrations with TimescaleDB-aware DDL (`create_hypertable`, compression policies) are wired and tested
 - [x] **FOUND-04**: Pure domain types (`Candle`, `OrderBook`, `Funding`, `Liquidation`, `Signal`, `Order`, `Position`, `RiskLimits`) are defined as Pydantic models with property tests on invariants
 - [ ] **FOUND-05**: Structured logging (structlog with correlation IDs) and Prometheus `/metrics` endpoint scaffolding exist in the service skeleton
 - [x] **FOUND-06**: `.gitignore` covers `.env*`, secret scanning runs pre-commit, GitHub secret scanning is enabled
@@ -200,7 +200,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **OPS-04**: CI blocks merge on failing tests or coverage drop below 80% (95% on `risk/` and `execution/` modules)
 - [ ] **OPS-05**: Commit → push → deploy to Railway after every completed task (per PROJECT.md DevOps requirement)
 - [ ] **OPS-06**: Three Railway services at v1: `data-platform`, `strategy-engine`, `dashboard`; fourth `risk-guard` added at live launch
-- [ ] **OPS-07**: Database migration discipline — Alembic migration files reviewed, applied in deploy step
+- [x] **OPS-07**: Database migration discipline — Alembic migration files reviewed, applied in deploy step
 - [x] **OPS-08**: Pre-commit hooks: ruff format, ruff lint, secret scan
 
 ### Testing & TDD (TEST)
@@ -267,7 +267,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | FOUND-01 | Phase 0 | Complete |
 | FOUND-02 | Phase 0 | Pending |
-| FOUND-03 | Phase 0 | Pending |
+| FOUND-03 | Phase 0 | Complete |
 | FOUND-04 | Phase 0 | Complete |
 | FOUND-05 | Phase 0 | Pending |
 | FOUND-06 | Phase 0 | Complete |
@@ -408,7 +408,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-04 | Phase 0 | Pending |
 | OPS-05 | Phase 1 | Pending |
 | OPS-06 | Phase 1 | Pending |
-| OPS-07 | Phase 0 | Pending |
+| OPS-07 | Phase 0 | Complete |
 | OPS-08 | Phase 0 | Complete |
 | TEST-01 | Phase 0 | Complete |
 | TEST-02 | Phase 0 | Complete |

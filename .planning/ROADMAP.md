@@ -45,7 +45,7 @@ Plans:
 
 - [x] 00-02-PLAN.md — 8 pure-Pydantic v2 domain types (Candle, OrderBook, Funding, Liquidation, Signal, Order, Position, RiskLimits) + Hypothesis property tests on every invariant (EXEC-02 + RISK-02 structural)
 - [x] 00-03-PLAN.md — Per-service BaseAppSettings subclasses with SecretStr + safe_summary() + assert_no_trade_env_leaked() anti-leak guard + 4-layer secret-scan defense
-- [ ] 00-04-PLAN.md — DB layer: DeclarativeBase + naming convention + idempotent Timescale DDL helpers + Alembic async env + 2 migrations (init extension + service_event hypertable with compression policy)
+- [x] 00-04-PLAN.md — DB layer: DeclarativeBase + naming convention + idempotent Timescale DDL helpers + Alembic async env + 2 migrations (init extension + service_event hypertable with compression policy)
 - [ ] 00-05-PLAN.md — Observability skeleton: structlog (merge_contextvars first) + asgi-correlation-id + Prometheus (4 base metrics) + 3 FastAPI entrypoints (data_platform, strategy_engine, dashboard) with /health + /metrics
 
 **Wave 3** *(blocked on Wave 2 completion)*
@@ -139,7 +139,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Foundation | 3/8 | In Progress|  |
+| 0. Foundation | 4/8 | In Progress|  |
 | 1. Data Platform | 0/TBD | Not started | - |
 | 2. Strategy Research + ML Methodology | 0/TBD | Not started | - |
 | 3. Backtester + Strategy Framework | 0/TBD | Not started | - |

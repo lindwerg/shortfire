@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 0 UI-SPEC approved
-last_updated: "2026-05-21T12:22:27.717Z"
+stopped_at: Completed 00-04-PLAN.md
+last_updated: "2026-05-21T12:33:12.314Z"
 last_activity: 2026-05-21
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 8
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -27,11 +27,11 @@ See: .planning/ROADMAP.md (created 2026-05-21)
 ## Current Position
 
 Phase: 00 (foundation) — EXECUTING
-Plan: 4 of 8
+Plan: 5 of 8
 Status: Ready to execute
 Last activity: 2026-05-21
 
-Progress: [████░░░░░░] 38%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ Progress: [████░░░░░░] 38%
 *Updated after each plan completion*
 | Phase 00 P02 | 480 | 2 tasks | 14 files |
 | Phase 00 P03 | 600 | 2 tasks | 11 files |
+| Phase 00 P04 | 720 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,7 @@ Decisions are logged in PROJECT.md Key Decisions table. The roadmap codifies the
 - Phase 2: Labeling method (triple-barrier vs alternatives) deferred to EDA per PROJECT.md; precision @ top-N is the gating metric (NOT AUC/accuracy)
 - Phase 4: Kill switch exists in Phase 4 paper, NOT Phase 5 — first time you need one in live is too late
 - Phase 5: `risk-guard` becomes a separate Railway service at live launch (not in-process); staged autonomy controlled by DB row update, no deploy
+- [Phase ?]: asyncpg-only Postgres driver (D-30); rewrite_url public alias for pyright; migration ordering 0001->0002 enforces timescaledb extension loads before create_hypertable
 
 ### Pending Todos
 
@@ -96,6 +98,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T12:22:27.710Z
-Stopped at: Phase 0 UI-SPEC approved
+Last session: 2026-05-21T12:33:12.307Z
+Stopped at: Completed 00-04-PLAN.md
 Resume file: None
