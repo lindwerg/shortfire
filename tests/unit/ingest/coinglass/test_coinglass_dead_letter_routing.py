@@ -124,7 +124,7 @@ class TestDeadLetterRouting:
                 # coinglass_retry is bounded (stop_after_attempt=5), so this would
                 # retry 5 times and then reraise. We test via _call directly to
                 # avoid the full retry loop in unit tests.
-                await client._call("/api/futures/funding-rate-list")
+                await client._call("/api/futures/funding-rate-list")  # type: ignore[reportPrivateUsage]  # noqa: SLF001
         finally:
             await client.close()
 
@@ -152,7 +152,7 @@ class TestDeadLetterRouting:
                     ),
                     pytest.raises(httpx.HTTPStatusError),
                 ):
-                    await client._call("/api/futures/funding-rate-list")
+                    await client._call("/api/futures/funding-rate-list")  # type: ignore[reportPrivateUsage]  # noqa: SLF001
         finally:
             await client.close()
 

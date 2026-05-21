@@ -65,9 +65,9 @@ class TestCoinglassClientConstructor:
         settings = _make_settings()
         client = CoinglassClient(settings)  # type: ignore[arg-type]
         try:
-            assert isinstance(client._client, httpx.AsyncClient)
+            assert isinstance(client._client, httpx.AsyncClient)  # type: ignore[reportPrivateUsage]  # noqa: SLF001
             # Verify HTTP/2 is enabled
-            assert client._client._transport is not None  # noqa: SLF001
+            assert client._client._transport is not None  # type: ignore[reportPrivateUsage]  # noqa: SLF001
         finally:
             await client.close()
 
@@ -87,7 +87,7 @@ class TestCoinglassClientConstructor:
         settings = _make_settings("my-secret-key")
         client = CoinglassClient(settings)  # type: ignore[arg-type]
         try:
-            assert client._client.headers.get("cg-api-key") == "my-secret-key"
+            assert client._client.headers.get("cg-api-key") == "my-secret-key"  # type: ignore[reportPrivateUsage]  # noqa: SLF001
         finally:
             await client.close()
 

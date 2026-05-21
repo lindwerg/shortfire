@@ -67,7 +67,7 @@ class CoinglassClient:
             },
         )
 
-    async def _call(self, endpoint: str, params: dict | None = None) -> dict | None:
+    async def _call(self, endpoint: str, params: dict[str, str] | None = None) -> dict[str, object] | None:
         """Internal: rate-limited GET with dead_letter on permanent 4xx, raise on 5xx/429.
 
         D-51: acquired via COINGLASS_LIMITER before every request.

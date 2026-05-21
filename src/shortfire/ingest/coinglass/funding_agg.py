@@ -16,6 +16,7 @@ RESEARCH.md §4.6: Batch funding endpoint preferred over per-symbol polling beca
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from decimal import Decimal
 
 import structlog
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -53,7 +54,7 @@ async def fetch_and_write(
         return 0
 
     ts_now = datetime.now(UTC)
-    records = []
+    records: list[tuple[str, datetime, Decimal, str, str]] = []
 
     for row in resp.data:
         unified = coinglass_to_unified.get(row.symbol)

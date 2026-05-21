@@ -151,7 +151,7 @@ class LiquidationCoinHistoryResponse(BaseModel):
         Columns: (symbol, ts, side, liquidation_usd, source, quality_flag)
         D-59: source forced to 'coinglass_aggregate'.
         """
-        records = []
+        records: list[tuple[str, datetime, str, Decimal | None, str, str]] = []
         for row in self.data:
             ts = datetime.fromtimestamp(row.time / 1000, tz=UTC)
             records.append(
