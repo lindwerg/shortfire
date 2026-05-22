@@ -104,11 +104,15 @@ class OpenInterestHistoryResponse(BaseModel):
         Columns: (symbol, ts, open_interest, source, quality_flag)
         D-59: source forced to 'coinglass_aggregate'.
         """
+        # WR-01: raw_coinglass_oi.open_interest is NOT NULL in migration 0009.
+        # Replace None with Decimal("0") so we never pass NULL to a NOT NULL column.
+        # Coinglass occasionally omits open_interest_usd for illiquid symbols; Decimal("0")
+        # is the correct sentinel value for "no open interest reported this interval".
         return [
             (
                 symbol_unified,
                 datetime.fromtimestamp(row.time / 1000, tz=UTC),
-                row.open_interest_usd,
+                row.open_interest_usd if row.open_interest_usd is not None else Decimal("0"),
                 "coinglass_aggregate",
                 "ok",
             )
@@ -144,22 +148,23 @@ class LiquidationCoinHistoryResponse(BaseModel):
         self,
         symbol_unified: str,
         source: str = "coinglass_aggregate",
-    ) -> list[tuple[str, datetime, str, Decimal | None, str, str]]:
+    ) -> list[tuple[str, datetime, str, Decimal, str, str]]:
         """Convert to list of tuples for copy_into_hypertable into raw_coinglass_liq.
 
         Each data point produces TWO records — one per side (long + short).
         Columns: (symbol, ts, side, liquidation_usd, source, quality_flag)
         D-59: source forced to 'coinglass_aggregate'.
+        WR-01: liquidation_usd is always Decimal (never None) — None → Decimal("0").
         """
-        records: list[tuple[str, datetime, str, Decimal | None, str, str]] = []
+        # WR-01: raw_coinglass_liq.liquidation_usd is NOT NULL in migration 0009.
+        # Replace None with Decimal("0") for both long and short sides.
+        records: list[tuple[str, datetime, str, Decimal, str, str]] = []
         for row in self.data:
             ts = datetime.fromtimestamp(row.time / 1000, tz=UTC)
-            records.append(
-                (symbol_unified, ts, "long", row.liquidation_long_usd, "coinglass_aggregate", "ok")
-            )
-            records.append(
-                (symbol_unified, ts, "short", row.liquidation_short_usd, "coinglass_aggregate", "ok")
-            )
+            liq_long = row.liquidation_long_usd if row.liquidation_long_usd is not None else Decimal("0")
+            liq_short = row.liquidation_short_usd if row.liquidation_short_usd is not None else Decimal("0")
+            records.append((symbol_unified, ts, "long", liq_long, "coinglass_aggregate", "ok"))
+            records.append((symbol_unified, ts, "short", liq_short, "coinglass_aggregate", "ok"))
         return records
 
 
