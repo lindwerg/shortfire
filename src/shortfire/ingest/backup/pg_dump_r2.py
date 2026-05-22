@@ -25,6 +25,7 @@ Usage:
 
 from __future__ import annotations
 
+import asyncio
 import os
 import subprocess
 from datetime import UTC, datetime
@@ -75,6 +76,46 @@ def _parse_dsn(database_url: str) -> tuple[str, str, str, int, str]:
         u.port or 5432,
         (u.path or "/postgres").lstrip("/"),
     )
+
+
+def _run_pg_dump_sync(
+    cmd: list[str],
+    env: dict[str, str],
+    s3: object,  # boto3 S3 client — type is dynamic
+    bucket: str,
+    key: str,
+) -> None:
+    """Synchronous pg_dump → S3 upload.  CR-03: safe to call from asyncio.to_thread().
+
+    Runs subprocess.Popen (blocking) and boto3.upload_fileobj (blocking) in a
+    thread so the event loop is not starved during the potentially multi-minute dump.
+
+    Args:
+        cmd: pg_dump command list.
+        env: Environment dict with PGPASSWORD injected (T-1-BCK-01).
+        s3: Configured boto3 S3 client.
+        bucket: Target R2 bucket name.
+        key: Object key for the dump (e.g. 'daily/20260105T010000Z.dump.zst').
+
+    Raises:
+        RuntimeError: If pg_dump exits with a non-zero return code.
+        Any subprocess / boto3 exception propagates to the asyncio.to_thread() caller.
+    """
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+    )
+    try:
+        s3.upload_fileobj(proc.stdout, bucket, key)  # type: ignore[attr-defined]
+        ret = proc.wait(timeout=3600)
+        if ret != 0:
+            err = (proc.stderr.read() or b"").decode("utf-8", errors="replace")
+            raise RuntimeError(f"pg_dump exit code {ret}: {err[:2000]}")
+    finally:
+        if proc.poll() is None:
+            proc.kill()
 
 
 async def daily_pg_dump_to_r2(settings: DataPlatformSettings | None = None) -> int:
@@ -133,21 +174,11 @@ async def daily_pg_dump_to_r2(settings: DataPlatformSettings | None = None) -> i
         dbname,
     ]
 
-    proc = subprocess.Popen(  # noqa: ASYNC220 — pg_dump must stream stdout to S3; asyncio.create_subprocess_exec lacks upload_fileobj streaming; this runs in a daily APScheduler cron at 01:00 UTC (not a hot path)
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env=env,
-    )
-    try:
-        s3.upload_fileobj(proc.stdout, settings.r2_backup.bucket_name, key)
-        ret = proc.wait(timeout=3600)
-        if ret != 0:
-            err = (proc.stderr.read() or b"").decode("utf-8", errors="replace")
-            raise RuntimeError(f"pg_dump exit code {ret}: {err[:2000]}")
-    finally:
-        if proc.poll() is None:
-            proc.kill()
+    # CR-03: Run the blocking pg_dump + S3 upload in a thread pool executor so the
+    # asyncio event loop is not blocked during the potentially multi-minute dump.
+    # subprocess.Popen + boto3.upload_fileobj are synchronous; wrapping in
+    # asyncio.to_thread() offloads them to the default ThreadPoolExecutor.
+    await asyncio.to_thread(_run_pg_dump_sync, cmd, env, s3, settings.r2_backup.bucket_name, key)
 
     # Update backup_age_seconds gauge (0 = just completed)
     metrics = build_data_platform_metrics()
