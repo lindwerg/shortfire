@@ -5,6 +5,12 @@ NEVER call from request-handling code or with user-controlled input.
 D-27 forbids raw op.execute("SELECT create_hypertable(...)") in migrations —
 all TimescaleDB DDL must go through these helpers.
 
+SQL injection defence (CR-01):
+  All identifier parameters (table, time_column, segment_by, view_name, etc.) are
+  validated against _SAFE_IDENT before interpolation. Interval strings are validated
+  against _SAFE_INTERVAL. Callers that pass constants from D-58 migration files will
+  always pass; any dynamic/untrusted string raises ValueError at migration time.
+
 Usage in migrations:
     from shortfire.db.timescale import create_hypertable, enable_compression, add_compression_policy
 
@@ -13,9 +19,49 @@ Usage in migrations:
     add_compression_policy("my_table", after_age="7 days")
 """
 
+import re
+
 from sqlalchemy import text
 
 from alembic import op
+
+# Whitelist for SQL identifiers: letter/underscore start, alphanumeric+underscore body,
+# max 63 chars (PostgreSQL identifier limit). Dots not allowed — callers never use
+# schema-qualified names here (all objects live in 'public').
+_SAFE_IDENT = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]{0,62}$")
+
+# Whitelist for interval strings: digits, letters, spaces, commas.
+# Covers '7 days', '1 day', '5 minutes', '2 hours', 'zstd:9' is NOT an interval
+# so the regex is intentionally narrow.  Rejects semicolons, quotes, parens, etc.
+_SAFE_INTERVAL = re.compile(r"^[0-9a-zA-Z :,\.]+$")
+
+# Whitelist for ORDER BY expressions used in compress_orderby.
+# Allows column name + optional ASC/DESC, e.g. 'ts DESC', 'ts ASC'.
+_SAFE_ORDER_BY = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]{0,62}( (ASC|DESC))?$")
+
+
+def _validate_identifier(name: str, param: str = "identifier") -> None:
+    """Raise ValueError if *name* is not a safe SQL identifier (CR-01)."""
+    if not _SAFE_IDENT.match(name):
+        raise ValueError(
+            f"Unsafe SQL {param}: {name!r}. "
+            "Only letters, digits, and underscores are allowed (must start with letter/underscore)."
+        )
+
+
+def _validate_interval(value: str, param: str = "interval") -> None:
+    """Raise ValueError if *value* is not a safe SQL interval string (CR-01)."""
+    if not _SAFE_INTERVAL.match(value):
+        raise ValueError(
+            f"Unsafe SQL {param}: {value!r}. "
+            "Only alphanumeric characters, spaces, colons, commas, and dots are allowed."
+        )
+
+
+def _validate_order_by(value: str) -> None:
+    """Raise ValueError if *value* is not a safe ORDER BY expression (CR-01)."""
+    if not _SAFE_ORDER_BY.match(value):
+        raise ValueError(f"Unsafe ORDER BY expression: {value!r}. Only '<column> ASC|DESC' form is allowed.")
 
 
 def create_hypertable(
@@ -37,6 +83,9 @@ def create_hypertable(
         chunk_interval: TimescaleDB chunk interval (e.g. '7 days', '1 day').
         if_not_exists: Skip silently if already a hypertable.
     """
+    _validate_identifier(table, "table")
+    _validate_identifier(time_column, "time_column")
+    _validate_interval(chunk_interval, "chunk_interval")
     op.execute(
         text(f"""
         SELECT create_hypertable(
@@ -61,6 +110,9 @@ def enable_compression(
         segment_by: Column name for compression segmentation.
         order_by: ORDER BY expression for compression (default: 'ts DESC').
     """
+    _validate_identifier(table, "table")
+    _validate_identifier(segment_by, "segment_by")
+    _validate_order_by(order_by)
     op.execute(
         text(f"""
         ALTER TABLE {table} SET (
@@ -87,6 +139,8 @@ def add_compression_policy(
         after_age: Compress chunks older than this interval.
         if_not_exists: Skip if policy already exists.
     """
+    _validate_identifier(table, "table")
+    _validate_interval(after_age, "after_age")
     op.execute(
         text(f"""
         SELECT add_compression_policy(
@@ -131,6 +185,12 @@ def create_continuous_aggregate(
         end_offset: CA refresh policy end_offset INTERVAL (D-67 locked values).
         schedule_interval: CA refresh policy schedule_interval INTERVAL (D-67 locked values).
     """
+    _validate_identifier(view_name, "view_name")
+    _validate_identifier(source_table, "source_table")
+    _validate_interval(bucket, "bucket")
+    _validate_interval(start_offset, "start_offset")
+    _validate_interval(end_offset, "end_offset")
+    _validate_interval(schedule_interval, "schedule_interval")
     if group_by is None:
         group_by = f"symbol, time_bucket('{bucket}', ts)"
 
@@ -173,6 +233,8 @@ def add_retention_policy(
         drop_after: Drop chunks older than this interval (e.g. '365 days').
         if_not_exists: Skip if policy already exists.
     """
+    _validate_identifier(table, "table")
+    _validate_interval(drop_after, "drop_after")
     op.execute(
         text(f"""
         SELECT add_retention_policy(
