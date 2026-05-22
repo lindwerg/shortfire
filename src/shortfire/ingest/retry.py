@@ -12,6 +12,23 @@ Invariant:
 
 All three use wait_exponential_jitter to spread retry storms and reraise=True
 so the caller observes the original exception after exhausted retries.
+
+ccxt exception handling (WR-05):
+  ccxt exceptions (ccxt.NetworkError, ccxt.ExchangeNotAvailable, ccxt.RateLimitExceeded)
+  are NOT subclasses of httpx.* — they inherit from ccxt.BaseError.
+  mexc_retry does NOT catch ccxt.NetworkError directly.
+
+  This is INTENTIONAL: ccxt has its own internal retry and rate-limit handling
+  when `enableRateLimit=True` (D-73 defense-in-depth). The ccxt client retries at the
+  transport layer before raising to our code. When ccxt does raise:
+    - ccxt.NetworkError / ccxt.ExchangeNotAvailable: propagate to the ingest loop's
+      exception handler which writes to dead_letter and backs off via the outer
+      reconnect protocol (D-49 points 1+2).
+    - ccxt.RateLimitExceeded: same path — dead_letter + reconnect backoff.
+
+  Adding ccxt.NetworkError to mexc_retry would create double-retry (tenacity ON TOP
+  of ccxt's internal throttler), potentially worsening rate-limit storms. Current
+  design: one retry layer per source (ccxt owns MEXC; tenacity owns httpx sources).
 """
 
 import logging
