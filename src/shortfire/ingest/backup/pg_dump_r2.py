@@ -232,14 +232,15 @@ def _sundown_sweep(s3: object, bucket: str) -> None:  # type: ignore[type-arg]
     """
 
     def _list_sorted_desc(prefix: str) -> list[dict]:  # type: ignore[type-arg]
-        resp = s3.list_objects_v2(Bucket=bucket, Prefix=prefix)  # type: ignore[attr-defined]
-        return sorted(
-            resp.get("Contents", []),
-            key=lambda o: o[
-                "Key"
-            ],  # sort by key name (contains ISO timestamp — lexicographic == chronological)
-            reverse=True,
-        )
+        # WR-04: list_objects_v2 returns at most 1000 objects per page.
+        # Use a paginator to collect ALL objects so the retention sweep works
+        # correctly even after years of daily backups accumulate (>1000 objects).
+        paginator = s3.get_paginator("list_objects_v2")  # type: ignore[attr-defined]
+        all_objs: list[dict] = []  # type: ignore[type-arg]
+        for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            all_objs.extend(page.get("Contents", []))
+        # Sort by key name — key contains ISO timestamp, so lexicographic == chronological.
+        return sorted(all_objs, key=lambda o: o["Key"], reverse=True)
 
     # Step 1: identify the newest daily dump by key-name timestamp
     daily_objs = _list_sorted_desc("daily/")
