@@ -54,7 +54,22 @@ FROM base AS runtime
 # postgresql-client-16: provides pg_dump matching the PG16 server version (RESEARCH.md §8.1 + §17).
 # Installed in the runtime stage (not deps) because it is a runtime binary, not a build dependency.
 # T-1-BCK-04: version must match the Railway PostgreSQL server (PG16 pinned in Phase 0 plan 00-07).
-RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client-16 && rm -rf /var/lib/apt/lists/*
+#
+# Bookworm's default apt repo ships pg-client-15; trixie ships pg-client-17.
+# Neither matches PG16 exactly, so we add the official PostgreSQL APT repo (PGDG)
+# which carries versioned client packages for every supported major version.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
+    && install -d /usr/share/postgresql-common/pgdg \
+    && curl -fsSLo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+       https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+    && CODENAME=$(awk -F= '/^VERSION_CODENAME/{print $2}' /etc/os-release) \
+    && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${CODENAME}-pgdg main" \
+       > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends postgresql-client-16 \
+    && apt-get purge -y --auto-remove curl gnupg \
+    && rm -rf /var/lib/apt/lists/*
 
 # Non-root user (T-00-01)
 RUN groupadd --system app && useradd --system --gid app --uid 1000 app
