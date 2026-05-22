@@ -11,7 +11,7 @@ status writes. High-volume row inserts use copy_into_hypertable.
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import CheckConstraint, DateTime, Integer, Text
+from sqlalchemy import CheckConstraint, DateTime, Integer, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -61,5 +61,10 @@ class IngestRun(Base):
     kv_state: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     # Quality flag
     quality_flag: Mapped[str] = mapped_column(Text, nullable=False, default="ok")
-    # Insert timestamp
-    ingested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    # Insert timestamp — WR-07: server_default matches migration 0013 server_default=func.now()
+    # so ORM inserts without an explicit ingested_at value succeed (PostgreSQL fills it in).
+    # Without server_default here, IngestRun() construction would pass ORM validation but
+    # the subsequent INSERT would fail with a NOT NULL violation if ingested_at was omitted.
+    ingested_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
