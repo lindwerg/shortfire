@@ -25,6 +25,19 @@ burst-429 (P1-A anti-pattern per RESEARCH.md Pattern 5).
 
 B2 guarantee: zero placeholder bodies. All round-robin callables have COMPLETE
 implementations using load_kv_state / save_kv_state for cursor persistence.
+
+Exception contract (WR-02):
+  Job callables do NOT wrap calls in a bare try/except unless they have specific
+  recovery logic (e.g. write to dead_letter). Unhandled exceptions propagate to
+  APScheduler 4.x which logs them via its internal event system and marks the job
+  run as FAILED — it does NOT re-raise or crash the scheduler. The next scheduled
+  invocation fires normally. This is the correct contract: APScheduler acts as the
+  supervisor; callers see consistent job state via the SQLAlchemyDataStore run log.
+
+  When tenacity exhausts all retry attempts (`stop_after_attempt` + `reraise=True`),
+  the original exception propagates up to APScheduler — job run is marked FAILED,
+  Telegram dead_letter alert fires within 5 min, operator is notified. Silently
+  swallowing retry-exhaustion exceptions is FORBIDDEN in job callables.
 """
 
 from __future__ import annotations
