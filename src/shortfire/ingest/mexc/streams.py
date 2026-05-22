@@ -10,6 +10,21 @@ D-78: continuous ws tasks live under FastAPI lifespan TaskGroup — separate con
        APScheduler-managed cron/interval jobs (OI, universe snapshot, backup).
 Pitfall 27: ZERO asyncio.create_task calls without holding reference — all tasks created
              via TaskGroup.create_task.
+
+ccxt dual-consumer assumption (WR-06):
+  Both trades_aggregator_loop and trades_persist_loop call
+  watch_trades_for_symbols(symbols) on the same ccxt.pro client instance.
+  This relies on ccxt Pro's internal per-symbol message cache: when two coroutines
+  call the same watch method on the same exchange object, ccxt delivers the same
+  buffered data to both callers independently.
+
+  This behaviour is documented in ccxt Pro docs and is stable across ccxt >= 4.4.
+  It is pinned to `>=4.5.54,<4.6` (D-41/pyproject.toml) to prevent silent breakage
+  from ccxt minor-version changes.
+
+  If ccxt changes this caching semantics in a future version, one of the two loops
+  would silently receive no data — detectable via the D-49 heartbeat watchdog
+  (freshness gauge lag > 60s triggers RuntimeError + respawn alert).
 """
 
 from __future__ import annotations
