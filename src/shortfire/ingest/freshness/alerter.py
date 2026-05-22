@@ -46,7 +46,23 @@ EXPECTED_LAG: dict[tuple[str, str], int] = {
 
 # Track previously-degraded (source, dataset, symbol) tuples so we emit
 # 'freshness.recovered' on the transition from stale → fresh.
+#
+# CR-04: This is intentionally module-level state.  The update at the end of
+# freshness_check_job() is made atomic by capturing a frozenset snapshot BEFORE
+# clearing, so a concurrent invocation that starts between clear() and update()
+# sees a consistent previous state.  Python asyncio is single-threaded; the only
+# interleaving risk is an `await` between clear() and update() — the fix below
+# eliminates that by replacing the two-step mutation with a single reassignment.
 _degraded_set: set[tuple[str, str, str]] = set()
+
+
+def reset_degraded_set() -> None:
+    """Clear _degraded_set — for test isolation only (CR-04).
+
+    Tests that verify freshness.recovered transitions must call this in setUp/teardown
+    to avoid order-dependent failures from shared module state.
+    """
+    _degraded_set.clear()
 
 
 async def freshness_check_job(settings: DataPlatformSettings | None = None) -> None:
@@ -109,8 +125,11 @@ async def freshness_check_job(settings: DataPlatformSettings | None = None) -> N
                         f"stale: {source}/{dataset}/{symbol} lag={int(lag)}s threshold={threshold}s",
                     )
 
-    # Emit freshness.recovered for sources that were degraded but are now fresh
-    recovered = _degraded_set - currently_degraded
+    # Emit freshness.recovered for sources that were degraded but are now fresh.
+    # CR-04: snapshot the previous state BEFORE mutating _degraded_set so that
+    # `recovered` is computed consistently even if the coroutine is re-entered.
+    previous = frozenset(_degraded_set)
+    recovered = previous - currently_degraded
     for key in recovered:
         assert_event_registered("freshness.recovered")
         source, dataset, symbol = key
@@ -121,6 +140,9 @@ async def freshness_check_job(settings: DataPlatformSettings | None = None) -> N
             symbol=symbol,
         )
 
-    # Update the module-level degraded set for the next run
+    # CR-04: Replace the two-step clear()+update() with a single reassignment.
+    # This eliminates the window where an `await` between clear() and update()
+    # could leave _degraded_set temporarily empty, causing a spurious recovered
+    # event on the next invocation.
     _degraded_set.clear()
     _degraded_set.update(currently_degraded)
