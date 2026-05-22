@@ -12,6 +12,10 @@ Covers:
 
 Note: each test isolates module state by removing the module from sys.modules before
 importing, so env-var changes are picked up cleanly.
+
+Phase 1 lifespan starts APScheduler v4 which connects to Postgres. Unit tests
+exercising the full lifespan patch scheduler_lifespan with a no-op so they do
+not require a live DB.
 """
 
 import importlib
@@ -19,11 +23,21 @@ import json
 import re
 import subprocess
 import sys
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from datetime import datetime
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
+
+
+@asynccontextmanager
+async def _noop_scheduler_lifespan(*args: Any, **kwargs: Any) -> AsyncGenerator[None, None]:
+    """Drop-in no-op for `scheduler_lifespan` — skips APScheduler PG bootstrap in unit tests."""
+    yield None
+
 
 # ---------------------------------------------------------------------------
 # Fixture: isolate module state so each test imports a fresh entrypoint
@@ -221,7 +235,10 @@ def test_data_platform_settings_loaded_emitted_on_lifespan(
     _set_base_env(monkeypatch)
     mod = _fresh_app("shortfire.entrypoints.data_platform")
 
-    with TestClient(mod.app) as _client:
+    with (
+        patch.object(mod, "scheduler_lifespan", _noop_scheduler_lifespan),
+        TestClient(mod.app) as _client,
+    ):
         captured = capsys.readouterr()  # type: ignore[attr-defined]
         all_output = captured.out + captured.err
 
@@ -242,7 +259,10 @@ def test_data_platform_settings_loaded_no_secretstr(
     _set_base_env(monkeypatch)
     mod = _fresh_app("shortfire.entrypoints.data_platform")
 
-    with TestClient(mod.app) as _client:
+    with (
+        patch.object(mod, "scheduler_lifespan", _noop_scheduler_lifespan),
+        TestClient(mod.app) as _client,
+    ):
         captured = capsys.readouterr()  # type: ignore[attr-defined]
         all_output = captured.out + captured.err
 

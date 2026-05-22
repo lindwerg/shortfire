@@ -101,7 +101,7 @@ def test_mexc_retry_catches_timeout_error() -> None:
     with pytest.raises((TimeoutError, RetryError)):
         import asyncio
 
-        asyncio.get_event_loop().run_until_complete(_raises_timeout())
+        asyncio.run(_raises_timeout())
 
     # Should have retried 6 times before giving up
     assert call_count == 6
@@ -123,7 +123,7 @@ def test_coinglass_retry_does_not_catch_timeout_error() -> None:
     with pytest.raises(TimeoutError):
         import asyncio
 
-        asyncio.get_event_loop().run_until_complete(_raises_timeout())
+        asyncio.run(_raises_timeout())
 
     # Should NOT have retried — first call then immediate re-raise
     assert call_count == 1
@@ -144,7 +144,7 @@ def test_coingecko_retry_does_not_catch_timeout_error() -> None:
     with pytest.raises(TimeoutError):
         import asyncio
 
-        asyncio.get_event_loop().run_until_complete(_raises_timeout())
+        asyncio.run(_raises_timeout())
 
     assert call_count == 1
 
@@ -164,7 +164,7 @@ def test_coinglass_retry_catches_transport_error() -> None:
     with pytest.raises((httpx.TransportError, RetryError)):
         import asyncio
 
-        asyncio.get_event_loop().run_until_complete(_raises_transport())
+        asyncio.run(_raises_transport())
 
     # Should have attempted 5 times (coinglass stop_after_attempt=5)
     assert call_count == 5
@@ -184,4 +184,4 @@ def test_mexc_retry_reraise_true() -> None:
     with pytest.raises(httpx.HTTPStatusError):
         import asyncio
 
-        asyncio.get_event_loop().run_until_complete(_raises_http())
+        asyncio.run(_raises_http())
