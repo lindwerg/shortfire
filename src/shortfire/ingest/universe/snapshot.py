@@ -13,7 +13,7 @@ Filter function is extracted as filter_qualifying_tickers() for pure-unit testin
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -109,7 +109,9 @@ async def universe_snapshot_job(
     Returns:
         Number of rows written to universe_snapshots (len of records batch).
     """
-    snapshot_date = date.today()
+    # WR-03: Use UTC date to avoid timezone shift on Railway containers (D-65).
+    # date.today() returns the container's local date which may be one day off from UTC.
+    snapshot_date = datetime.now(UTC).date()
 
     # Step 1: Fetch live tickers from MEXC
     try:
