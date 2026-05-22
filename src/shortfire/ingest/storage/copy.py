@@ -77,12 +77,15 @@ async def copy_into_hypertable(
         staging = f"{target_table}_staging_{pid}"
 
         async with raw_conn.transaction():
-            # Create UNLOGGED staging table scoped to this backend PID (fast, isolated)
+            # Create UNLOGGED staging table scoped to this backend PID (fast, isolated).
+            # CR-02: DDL and DML separated into two explicit execute() calls — asyncpg
+            # batch-statement behaviour for semicolon-separated queries is not guaranteed;
+            # a combined CREATE+TRUNCATE string may silently skip the TRUNCATE on some
+            # driver versions, leaving stale rows from a prior cycle in the staging table.
             await raw_conn.execute(
-                f"CREATE UNLOGGED TABLE IF NOT EXISTS {staging}"
-                f" (LIKE {target_table} INCLUDING DEFAULTS);"
-                f" TRUNCATE TABLE {staging};"
+                f"CREATE UNLOGGED TABLE IF NOT EXISTS {staging} (LIKE {target_table} INCLUDING DEFAULTS)"
             )
+            await raw_conn.execute(f"TRUNCATE TABLE {staging}")
 
             # Bulk copy via asyncpg native COPY protocol
             await raw_conn.copy_records_to_table(
