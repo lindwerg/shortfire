@@ -246,10 +246,18 @@ async def mexc_ws_streams(
                 name="mexc.cross_rest.divergence",
             )
 
-            yield
-
-            # Signal watchdog tasks to exit cleanly when the context exits normally
-            shutdown_event.set()
+            # CR-05: wrap yield in try/finally so shutdown_event.set() is called
+            # BEFORE TaskGroup.__aexit__ blocks waiting for all tasks to finish.
+            # Without this, the event loop deadlocks on normal lifespan shutdown:
+            # TaskGroup.__aexit__ waits for watchdog/divergence tasks, but those
+            # tasks spin on `while not shutdown_event.is_set()` and never exit.
+            # The finally clause fires as soon as the `async with mexc_ws_streams()`
+            # block in data_platform.py completes (i.e. when FastAPI lifespan exits),
+            # signalling all tasks to stop before the TaskGroup joins them.
+            try:
+                yield
+            finally:
+                shutdown_event.set()
 
     except* RuntimeError as eg:
         # Watchdog raised RuntimeError on staleness — supervisor (FastAPI lifespan) must respawn.
