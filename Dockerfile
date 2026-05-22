@@ -13,7 +13,10 @@
 #   - Runtime stage carries NO uv, NO build tools — only the resolved venv
 #     and application source.
 #
-FROM python:3.12-slim AS base
+# python:3.12-slim-bookworm pinned (Debian 12). Debian 13 (trixie) no longer ships
+# postgresql-client-16 — only client-17. We need a client matching the PG16 server
+# version (T-1-BCK-04), so bookworm is the right base until the server upgrades to PG17.
+FROM python:3.12-slim-bookworm AS base
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
